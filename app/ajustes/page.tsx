@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getRadio, setRadio } from "@/lib/preferencias";
+import { rangoDesdePuntos, progresoHaciaSiguiente } from "@/lib/rangos";
 
 type Valoracion = {
   id: string;
@@ -25,6 +26,8 @@ export default function AjustesPage() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [radio, setRadioState] = useState(5000);
   const [misValoraciones, setMisValoraciones] = useState<Valoracion[]>([]);
+const [puntos, setPuntos] = useState(0);
+  const [banosPublicados, setBanosPublicados] = useState(0);
   const [guardando, setGuardando] = useState(false);
   const [mensaje, setMensaje] = useState("");
 
@@ -47,7 +50,40 @@ export default function AjustesPage() {
         setUsername(perfil.username ?? "");
         setAvatarUrl(perfil.avatar_url);
       }
+{/* Mi nivel */}
+      <section className="mb-8 rounded-2xl border bg-card p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold">Mi nivel</h2>
+          <Button variant="outline" size="sm" onClick={() => router.push("/ranking")}>
+            Ver ranking 🏆
+          </Button>
+        </div>
 
+        <div className="flex items-center gap-4">
+          <span className="text-4xl">{rangoDesdePuntos(puntos).emoji}</span>
+          <div className="flex-1">
+            <p className="font-bold">{rangoDesdePuntos(puntos).nombre}</p>
+            <p className="text-sm text-muted-foreground">
+              {puntos} puntos · {banosPublicados} baños · {misValoraciones.length} valoraciones
+            </p>
+          </div>
+        </div>
+
+        {rangoDesdePuntos(puntos).siguiente !== null && (
+          <div className="mt-4">
+            <div className="h-2.5 overflow-hidden rounded-full bg-muted">
+              <div
+                className="h-full rounded-full bg-primary transition-all"
+                style={{ width: `${progresoHaciaSiguiente(puntos)}%` }}
+              />
+            </div>
+            <p className="mt-1.5 text-xs text-muted-foreground">
+              {rangoDesdePuntos(puntos).siguiente! - puntos} puntos para el
+              siguiente rango
+            </p>
+          </div>
+        )}
+      </section>
       // Mis valoraciones (con el nombre del baño)
       const { data: vals } = await supabase
         .from("valoraciones")
@@ -55,7 +91,16 @@ export default function AjustesPage() {
         .eq("user_id", userData.user.id)
         .order("created_at", { ascending: false });
       if (vals) setMisValoraciones(vals as unknown as Valoracion[]);
-
+// Mis puntos del ranking
+      const { data: rank } = await supabase
+        .from("ranking_usuarios")
+        .select("puntos, banos_publicados")
+        .eq("id", userData.user.id)
+        .single();
+      if (rank) {
+        setPuntos(rank.puntos);
+        setBanosPublicados(rank.banos_publicados);
+      }
       setRadioState(getRadio());
     }
     cargar();

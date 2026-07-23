@@ -44,7 +44,10 @@ export default function BarraNavegacion() {
             <span className="hidden text-sm text-gray-600 sm:inline">
               {email}
             </span>
-<Button variant="ghost" size="sm" onClick={() => router.push("/ajustes")}>
+            <Button variant="ghost" size="sm" onClick={() => router.push("/ranking")}>
+              🏆
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => router.push("/ajustes")}>
               ⚙️ Ajustes
             </Button>
             <Button variant="outline" size="sm" onClick={cerrarSesion}>
