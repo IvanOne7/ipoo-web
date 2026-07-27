@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   APIProvider,
   Map,
   AdvancedMarker,
   useMap,
 } from "@vis.gl/react-google-maps";
+import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import { createClient } from "@/lib/supabase/client";
 import { estadoDesdeRating } from "@/lib/estado";
 import { getRadio } from "@/lib/preferencias";
@@ -22,10 +23,12 @@ function CapaBanos({
   recargar,
   onSeleccionBano,
   onBanosCargados,
+  miPos,
 }: {
   recargar: number;
   onSeleccionBano: (b: Bano) => void;
   onBanosCargados: (banos: Bano[]) => void;
+  miPos: { lat: number; lng: number } | null;
 }) {
   const map = useMap();
   const supabase = createClient();
@@ -52,16 +55,23 @@ function CapaBanos({
         });
     }
 
-    // Carga inicial
     cargarBanos();
-
-    // Recargar cada vez que el mapa deja de moverse
     const listener = map.addListener("idle", cargarBanos);
     return () => google.maps.event.removeListener(listener);
   }, [map, recargar, supabase, onBanosCargados]);
 
   return (
     <>
+      {/* Punto azul de mi ubicación */}
+      {miPos && (
+        <AdvancedMarker position={miPos} title="Estás aquí">
+          <div className="relative flex items-center justify-center">
+            <div className="absolute h-6 w-6 animate-ping rounded-full bg-blue-500/40" />
+            <div className="h-4 w-4 rounded-full border-2 border-white bg-blue-600 shadow-md" />
+          </div>
+        </AdvancedMarker>
+      )}
+
       {banos.map((b) => (
         <AdvancedMarker
           key={b.id}
@@ -69,7 +79,7 @@ function CapaBanos({
           title={b.nombre}
           onClick={() => onSeleccionBano(b)}
         >
-      <MarcadorBano
+          <MarcadorBano
             estado={estadoDesdeRating(b.rating_medio, b.total_valoraciones)}
             size={40}
             verificado={!!b.verificado_dueno}
@@ -82,6 +92,7 @@ function CapaBanos({
 
 export default function Mapa() {
   const [centro, setCentro] = useState({ lat: 38.0951, lng: -3.6366 });
+  const [miPos, setMiPos] = useState<{ lat: number; lng: number } | null>(null);
   const [cargado, setCargado] = useState(false);
   const [recargar, setRecargar] = useState(0);
   const [nuevoPunto, setNuevoPunto] = useState<{ lat: number; lng: number } | null>(null);
@@ -96,7 +107,9 @@ export default function Mapa() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          setCentro({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+          const p = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          setCentro(p);
+          setMiPos(p);
           setCargado(true);
         },
         () => setCargado(true)
@@ -125,7 +138,6 @@ export default function Mapa() {
     setListaBanos(banos);
   }, []);
 
-  // Al elegir un baño en el buscador o en emergencia: centrar el mapa y abrir su ficha
   const handleSeleccionDesdeBuscador = useCallback(
     (b: Bano) => {
       if (mapaRef) {
@@ -137,13 +149,25 @@ export default function Mapa() {
     [mapaRef]
   );
 
-  // Confirmar la posición del pin central
   function confirmarUbicacion() {
     if (!mapaRef) return;
     const c = mapaRef.getCenter();
     if (!c) return;
     setNuevoPunto({ lat: c.lat(), lng: c.lng() });
     setModoAnadir(false);
+  }
+
+  // Centrar el mapa en mi ubicación
+  function centrarEnMi() {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const p = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      setMiPos(p);
+      if (mapaRef) {
+        mapaRef.panTo(p);
+        mapaRef.setZoom(16);
+      }
+    });
   }
 
   if (!cargado) {
@@ -171,6 +195,15 @@ export default function Mapa() {
               onEmergencia={handleSeleccionDesdeBuscador}
             />
 
+            {/* Botón centrarme */}
+            <button
+              onClick={centrarEnMi}
+              title="Centrarme en mi ubicación"
+              className="absolute bottom-28 right-6 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-card text-xl shadow-lg ring-1 ring-black/5 transition hover:shadow-xl"
+            >
+              🎯
+            </button>
+
             <Button
               onClick={() => {
                 if (haySesion) {
@@ -187,7 +220,6 @@ export default function Mapa() {
           </>
         )}
 
-        {/* Modo añadir: pin central fijo + confirmar */}
         {modoAnadir && (
           <>
             <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
@@ -229,14 +261,17 @@ export default function Mapa() {
           defaultCenter={centro}
           defaultZoom={15}
           gestureHandling="greedy"
-          disableDefaultUI={false}
           mapId={process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID!}
           onIdle={(e) => setMapaRef(e.map)}
+          disableDefaultUI={true}
+          zoomControl={true}
+          clickableIcons={false}
         >
           <CapaBanos
             recargar={recargar}
             onSeleccionBano={handleSeleccionBano}
             onBanosCargados={handleBanosCargados}
+            miPos={miPos}
           />
         </Map>
       </div>
