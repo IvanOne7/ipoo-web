@@ -1,13 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   APIProvider,
   Map,
   AdvancedMarker,
   useMap,
 } from "@vis.gl/react-google-maps";
-import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import { createClient } from "@/lib/supabase/client";
 import { estadoDesdeRating } from "@/lib/estado";
 import { getRadio } from "@/lib/preferencias";
@@ -18,6 +17,38 @@ import BotonEmergencia from "@/components/boton-emergencia";
 import BarraNavegacion from "@/components/barra-navegacion";
 import MarcadorBano from "@/components/marcador-bano";
 import { Button } from "@/components/ui/button";
+
+type Grupo = {
+  lat: number;
+  lng: number;
+  banos: Bano[];
+};
+
+// Agrupa baños cercanos según el nivel de zoom
+function agruparBanos(banos: Bano[], map: google.maps.Map): Grupo[] {
+  const zoom = map.getZoom() ?? 15;
+  // A más zoom, menos agrupamos
+  const factor = 60 / Math.pow(2, zoom);
+  const grupos: Grupo[] = [];
+
+  for (const b of banos) {
+    let asignado = false;
+    for (const g of grupos) {
+      if (
+        Math.abs(g.lat - b.lat_bano) < factor &&
+        Math.abs(g.lng - b.lng_bano) < factor
+      ) {
+        g.banos.push(b);
+        asignado = true;
+        break;
+      }
+    }
+    if (!asignado) {
+      grupos.push({ lat: b.lat_bano, lng: b.lng_bano, banos: [b] });
+    }
+  }
+  return grupos;
+}
 
 function CapaBanos({
   recargar,
@@ -33,6 +64,7 @@ function CapaBanos({
   const map = useMap();
   const supabase = createClient();
   const [banos, setBanos] = useState<Bano[]>([]);
+  const [, setTick] = useState(0); // fuerza recalcular grupos al mover/zoom
 
   useEffect(() => {
     if (!map) return;
@@ -56,9 +88,20 @@ function CapaBanos({
     }
 
     cargarBanos();
-    const listener = map.addListener("idle", cargarBanos);
-    return () => google.maps.event.removeListener(listener);
+    const idle = map.addListener("idle", () => {
+      cargarBanos();
+      setTick((t) => t + 1);
+    });
+    return () => google.maps.event.removeListener(idle);
   }, [map, recargar, supabase, onBanosCargados]);
+
+  useEffect(() => {
+    if (!map) return;
+    const z = map.addListener("zoom_changed", () => setTick((t) => t + 1));
+    return () => google.maps.event.removeListener(z);
+  }, [map]);
+
+  const grupos = map ? agruparBanos(banos, map) : [];
 
   return (
     <>
@@ -72,20 +115,41 @@ function CapaBanos({
         </AdvancedMarker>
       )}
 
-      {banos.map((b) => (
-        <AdvancedMarker
-          key={b.id}
-          position={{ lat: b.lat_bano, lng: b.lng_bano }}
-          title={b.nombre}
-          onClick={() => onSeleccionBano(b)}
-        >
-          <MarcadorBano
-            estado={estadoDesdeRating(b.rating_medio, b.total_valoraciones)}
-            size={40}
-            verificado={!!b.verificado_dueno}
-          />
-        </AdvancedMarker>
-      ))}
+      {grupos.map((g, i) =>
+        g.banos.length === 1 ? (
+          <AdvancedMarker
+            key={g.banos[0].id}
+            position={{ lat: g.banos[0].lat_bano, lng: g.banos[0].lng_bano }}
+            title={g.banos[0].nombre}
+            onClick={() => onSeleccionBano(g.banos[0])}
+          >
+            <MarcadorBano
+              estado={estadoDesdeRating(
+                g.banos[0].rating_medio,
+                g.banos[0].total_valoraciones
+              )}
+              size={40}
+              verificado={!!g.banos[0].verificado_dueno}
+            />
+          </AdvancedMarker>
+        ) : (
+          <AdvancedMarker
+            key={`grupo-${i}`}
+            position={{ lat: g.lat, lng: g.lng }}
+            title={`${g.banos.length} baños`}
+            onClick={() => {
+              if (map) {
+                map.panTo({ lat: g.lat, lng: g.lng });
+                map.setZoom((map.getZoom() ?? 15) + 2);
+              }
+            }}
+          >
+            <div className="flex h-11 w-11 items-center justify-center rounded-full border-4 border-white bg-primary text-sm font-bold text-white shadow-lg">
+              {g.banos.length}
+            </div>
+          </AdvancedMarker>
+        )
+      )}
     </>
   );
 }
@@ -157,7 +221,6 @@ export default function Mapa() {
     setModoAnadir(false);
   }
 
-  // Centrar el mapa en mi ubicación
   function centrarEnMi() {
     if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition((pos) => {
@@ -195,7 +258,6 @@ export default function Mapa() {
               onEmergencia={handleSeleccionDesdeBuscador}
             />
 
-            {/* Botón centrarme */}
             <button
               onClick={centrarEnMi}
               title="Centrarme en mi ubicación"
