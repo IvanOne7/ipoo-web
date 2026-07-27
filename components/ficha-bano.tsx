@@ -24,6 +24,7 @@ type Valoracion = {
   comentario: string | null;
   fotos: string[];
   created_at: string;
+  respuesta_dueno: string | null;
 };
 
 function media(vals: Valoracion[], campo: keyof Valoracion): number | null {
@@ -120,7 +121,7 @@ export default function FichaBano({
         setCargando(false);
       });
 
-// Registrar visita (para estadísticas del dueño)
+    // Registrar visita (para estadísticas del dueño)
     supabase.from("visitas_bano").insert({ bano_id: banoId });
   }, [banoId, supabase]);
 
@@ -213,11 +214,12 @@ export default function FichaBano({
           {/* ---------- VISTA VER ---------- */}
           {modo === "ver" && (
             <div className="space-y-5">
-   {bano.cerrado_temporal && (
+              {bano.cerrado_temporal && (
                 <div className="rounded-2xl bg-amber-100 p-3 text-center text-sm font-semibold text-amber-800">
                   ⚠️ Cerrado temporalmente
                 </div>
               )}
+
               {/* Información práctica */}
               <div className="space-y-3">
                 {bano.direccion && (
@@ -336,6 +338,14 @@ export default function FichaBano({
                                 className="h-20 w-20 cursor-pointer rounded-xl object-cover transition hover:opacity-80"
                               />
                             ))}
+                          </div>
+                        )}
+                        {v.respuesta_dueno && (
+                          <div className="mt-2 rounded-xl bg-primary/5 p-2">
+                            <p className="text-xs font-semibold text-primary">
+                              🏪 Respuesta del local
+                            </p>
+                            <p className="mt-0.5">{v.respuesta_dueno}</p>
                           </div>
                         )}
                       </div>
