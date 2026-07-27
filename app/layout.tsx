@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import "./globals.css";
 import RegistrarSW from "@/components/registrar-sw";
+import BannerCookies from "@/components/banner-cookies";
 
 const nunito = Nunito({
   subsets: ["latin"],
@@ -29,9 +30,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es">
-      <body className={nunito.className}>
+     <body className={nunito.className}>
         <RegistrarSW />
         {children}
+        <BannerCookies />
       </body>
     </html>
   );

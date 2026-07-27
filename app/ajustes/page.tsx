@@ -262,6 +262,23 @@ const [puntos, setPuntos] = useState(0);
           </div>
         )}
       </section>
+<section className="rounded-2xl border bg-card p-6 shadow-sm">
+          <h2 className="mb-3 text-lg font-semibold">Información y ayuda</h2>
+          <div className="flex flex-col gap-2 text-sm">
+            <a href="/ayuda" className="text-primary hover:underline">
+              Centro de ayuda
+            </a>
+            <a href="/legal/privacidad" className="text-primary hover:underline">
+              Política de privacidad
+            </a>
+            <a href="/legal/aviso-legal" className="text-primary hover:underline">
+              Aviso legal
+            </a>
+            <a href="/legal/cookies" className="text-primary hover:underline">
+              Política de cookies
+            </a>
+          </div>
+        </section>
 
       {/* Cerrar sesión */}
       <Button variant="destructive" onClick={cerrarSesion}>
