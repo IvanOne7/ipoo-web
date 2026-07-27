@@ -27,7 +27,8 @@ export type Bano = {
   horario: string | null;
  verificado: boolean | null;
   created_by: string | null;
-  verificado_dueno: boolean | null;
+verificado_dueno: boolean | null;
+  cerrado_temporal: boolean | null;
 };
 
 type Criterio =

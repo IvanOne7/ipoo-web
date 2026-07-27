@@ -45,7 +45,10 @@ export default function BarraNavegacion() {
               {email}
             </span>
             <Button variant="ghost" size="sm" onClick={() => router.push("/ranking")}>
-              🏆
+              🏆 Ranking
+            </Button>
+<Button variant="ghost" size="sm" onClick={() => router.push("/mi-negocio")}>
+              🏪 Mi baño (Sólo negocios)
             </Button>
             <Button variant="ghost" size="sm" onClick={() => router.push("/ajustes")}>
               ⚙️ Ajustes

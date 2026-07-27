@@ -10,7 +10,6 @@ import { Label } from "@/components/ui/label";
 export default function LoginPage() {
   const router = useRouter();
   const supabase = createClient();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
@@ -39,6 +38,22 @@ export default function LoginPage() {
       router.push("/");
       router.refresh();
     }
+  }
+
+  async function entrarConGoogle() {
+    setCargando(true);
+    setMensaje("");
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+    if (error) {
+      setMensaje("Error: " + error.message);
+      setCargando(false);
+    }
+    // Si va bien, el navegador redirige solo a Google
   }
 
   return (
@@ -94,6 +109,27 @@ export default function LoginPage() {
             className="w-full"
           >
             Crear cuenta
+          </Button>
+
+          <div className="flex items-center gap-3 py-1">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-xs text-muted-foreground">o</span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+
+          <Button
+            onClick={entrarConGoogle}
+            disabled={cargando}
+            variant="outline"
+            className="w-full"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://www.google.com/favicon.ico"
+              alt=""
+              className="mr-2 h-4 w-4"
+            />
+            Entrar con Google
           </Button>
 
           {mensaje && (

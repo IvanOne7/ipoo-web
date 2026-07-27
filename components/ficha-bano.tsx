@@ -119,6 +119,9 @@ export default function FichaBano({
         if (data) setValoraciones(data as Valoracion[]);
         setCargando(false);
       });
+
+// Registrar visita (para estadísticas del dueño)
+    supabase.from("visitas_bano").insert({ bano_id: banoId });
   }, [banoId, supabase]);
 
   const mediaGeneral =
@@ -210,6 +213,11 @@ export default function FichaBano({
           {/* ---------- VISTA VER ---------- */}
           {modo === "ver" && (
             <div className="space-y-5">
+   {bano.cerrado_temporal && (
+                <div className="rounded-2xl bg-amber-100 p-3 text-center text-sm font-semibold text-amber-800">
+                  ⚠️ Cerrado temporalmente
+                </div>
+              )}
               {/* Información práctica */}
               <div className="space-y-3">
                 {bano.direccion && (
