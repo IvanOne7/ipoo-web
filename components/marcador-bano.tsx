@@ -21,7 +21,7 @@ export default function MarcadorBano({
         height: size,
         borderColor: COLORES_BORDE[estado],
       }}
-      className="flex items-center justify-center rounded-full border-4 bg-white shadow-md"
+      className="pointer-events-none flex items-center justify-center rounded-full border-4 bg-white shadow-md"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
