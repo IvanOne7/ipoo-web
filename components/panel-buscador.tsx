@@ -25,7 +25,9 @@ export type Bano = {
   es_accesible: boolean | null;
   tiene_cambiador: boolean | null;
   horario: string | null;
-  verificado: boolean | null;
+ verificado: boolean | null;
+  created_by: string | null;
+  verificado_dueno: boolean | null;
 };
 
 type Criterio =

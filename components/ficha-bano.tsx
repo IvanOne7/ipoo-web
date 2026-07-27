@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import SelectorPuntuacion from "@/components/selector-puntuacion";
+import FormularioReclamar from "@/components/formulario-reclamar";
 import type { Bano } from "@/components/panel-buscador";
 
 type Valoracion = {
@@ -74,10 +75,12 @@ export default function FichaBano({
   bano,
   onCerrar,
   onValorado,
+  onEditar,
 }: {
   bano: Bano;
   onCerrar: () => void;
   onValorado: () => void;
+  onEditar: () => void;
 }) {
   const banoId = bano.id;
   const nombre = bano.nombre;
@@ -89,6 +92,8 @@ export default function FichaBano({
   const [valoraciones, setValoraciones] = useState<Valoracion[]>([]);
   const [cargando, setCargando] = useState(true);
   const [fotoAmpliada, setFotoAmpliada] = useState<string | null>(null);
+  const [miId, setMiId] = useState<string | null>(null);
+  const [reclamando, setReclamando] = useState(false);
 
   const [general, setGeneral] = useState(0);
   const [limpieza, setLimpieza] = useState(0);
@@ -101,6 +106,10 @@ export default function FichaBano({
   const [mensaje, setMensaje] = useState("");
 
   useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setMiId(data.user?.id ?? null);
+    });
+
     supabase
       .from("valoraciones")
       .select("*")
@@ -183,7 +192,14 @@ export default function FichaBano({
       <Dialog open onOpenChange={(v) => !v && onCerrar()}>
         <DialogContent className="z-[9999] max-h-[85vh] overflow-y-auto overscroll-contain rounded-3xl">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold">{nombre}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2 text-xl font-bold">
+              {nombre}
+              {bano.verificado_dueno && (
+                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+                  ✓ Verificado por el local
+                </span>
+              )}
+            </DialogTitle>
             {distancia !== undefined && (
               <p className="text-sm font-semibold text-primary">
                 📍 A {formatearDistancia(distancia)} de ti
@@ -221,8 +237,7 @@ export default function FichaBano({
                   <p className="rounded-2xl bg-muted/50 p-3 text-sm">{bano.descripcion}</p>
                 )}
 
-                
-<Button
+                <Button
                   variant="outline"
                   className="w-full"
                   onClick={() =>
@@ -234,6 +249,26 @@ export default function FichaBano({
                 >
                   🧭 Cómo llegar
                 </Button>
+
+                {miId && bano.created_by === miId && (
+                  <Button
+                    variant="ghost"
+                    className="w-full text-sm"
+                    onClick={onEditar}
+                  >
+                    ✏️ Editar este baño
+                  </Button>
+                )}
+
+                {!bano.verificado_dueno && (
+                  <Button
+                    variant="ghost"
+                    className="w-full text-sm"
+                    onClick={() => setReclamando(true)}
+                  >
+                    🏪 Soy el propietario
+                  </Button>
+                )}
               </div>
 
               {cargando ? (
@@ -359,6 +394,14 @@ export default function FichaBano({
           )}
         </DialogContent>
       </Dialog>
+
+      {reclamando && (
+        <FormularioReclamar
+          banoId={banoId}
+          nombreBano={nombre}
+          onCerrar={() => setReclamando(false)}
+        />
+      )}
 
       {/* Visor de foto a pantalla completa */}
       {fotoAmpliada && (

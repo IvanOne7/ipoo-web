@@ -9,6 +9,7 @@ import {
 } from "@vis.gl/react-google-maps";
 import { createClient } from "@/lib/supabase/client";
 import { estadoDesdeRating } from "@/lib/estado";
+import { getRadio } from "@/lib/preferencias";
 import FormularioBano from "@/components/formulario-bano";
 import FichaBano from "@/components/ficha-bano";
 import PanelBuscador, { type Bano } from "@/components/panel-buscador";
@@ -41,7 +42,7 @@ function CapaBanos({
         .rpc("banos_cercanos", {
           lat: centro.lat(),
           lng: centro.lng(),
-          radio_metros: 5000,
+          radio_metros: getRadio(),
         })
         .then(({ data }) => {
           if (data) {
@@ -68,9 +69,10 @@ function CapaBanos({
           title={b.nombre}
           onClick={() => onSeleccionBano(b)}
         >
-          <MarcadorBano
+      <MarcadorBano
             estado={estadoDesdeRating(b.rating_medio, b.total_valoraciones)}
             size={40}
+            verificado={!!b.verificado_dueno}
           />
         </AdvancedMarker>
       ))}
@@ -87,6 +89,8 @@ export default function Mapa() {
   const [listaBanos, setListaBanos] = useState<Bano[]>([]);
   const [mapaRef, setMapaRef] = useState<google.maps.Map | null>(null);
   const [modoAnadir, setModoAnadir] = useState(false);
+  const [banoEditar, setBanoEditar] = useState<Bano | null>(null);
+  const [haySesion, setHaySesion] = useState<boolean | null>(null);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -100,6 +104,17 @@ export default function Mapa() {
     } else {
       setCargado(true);
     }
+  }, []);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      setHaySesion(!!data.user);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      setHaySesion(!!session?.user);
+    });
+    return () => sub.subscription.unsubscribe();
   }, []);
 
   const handleSeleccionBano = useCallback((b: Bano) => {
@@ -157,7 +172,13 @@ export default function Mapa() {
             />
 
             <Button
-              onClick={() => setModoAnadir(true)}
+              onClick={() => {
+                if (haySesion) {
+                  setModoAnadir(true);
+                } else {
+                  window.location.href = "/login";
+                }
+              }}
               className="absolute bottom-6 left-6 z-10 rounded-full shadow-lg"
               size="lg"
             >
@@ -231,6 +252,17 @@ export default function Mapa() {
         />
       )}
 
+      {banoEditar && (
+        <FormularioBano
+          banoExistente={banoEditar}
+          onCerrar={() => setBanoEditar(null)}
+          onGuardado={() => {
+            setBanoEditar(null);
+            setRecargar((r) => r + 1);
+          }}
+        />
+      )}
+
       {banoSeleccionado && (
         <FichaBano
           bano={banoSeleccionado}
@@ -238,6 +270,10 @@ export default function Mapa() {
           onValorado={() => {
             setBanoSeleccionado(null);
             setRecargar((r) => r + 1);
+          }}
+          onEditar={() => {
+            setBanoEditar(banoSeleccionado);
+            setBanoSeleccionado(null);
           }}
         />
       )}

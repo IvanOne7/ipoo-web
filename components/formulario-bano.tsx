@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import type { Bano } from "@/components/panel-buscador";
 
 const TIPOS = [
   { valor: "publico_calle", etiqueta: "Público de calle" },
@@ -47,28 +48,35 @@ function Casilla({
 
 export default function FormularioBano({
   punto,
+  banoExistente,
   onCerrar,
   onGuardado,
 }: {
-  punto: { lat: number; lng: number };
+  punto?: { lat: number; lng: number };
+  banoExistente?: Bano;
   onCerrar: () => void;
   onGuardado: () => void;
 }) {
   const supabase = createClient();
+  const editando = !!banoExistente;
 
-  const [nombre, setNombre] = useState("");
-  const [tipo, setTipo] = useState("publico_calle");
-  const [direccion, setDireccion] = useState("");
-  const [horario, setHorario] = useState("");
-  const [descripcion, setDescripcion] = useState("");
+  const [nombre, setNombre] = useState(banoExistente?.nombre ?? "");
+  const [tipo, setTipo] = useState(banoExistente?.tipo ?? "publico_calle");
+  const [direccion, setDireccion] = useState(banoExistente?.direccion ?? "");
+  const [horario, setHorario] = useState(banoExistente?.horario ?? "");
+  const [descripcion, setDescripcion] = useState(banoExistente?.descripcion ?? "");
 
-  const [esGratis, setEsGratis] = useState(true);
-  const [requiereConsumir, setRequiereConsumir] = useState(false);
-  const [tienePapel, setTienePapel] = useState(false);
-  const [tieneJabon, setTieneJabon] = useState(false);
-  const [tieneSecador, setTieneSecador] = useState(false);
-  const [esAccesible, setEsAccesible] = useState(false);
-  const [tieneCambiador, setTieneCambiador] = useState(false);
+  const [esGratis, setEsGratis] = useState(banoExistente?.es_gratis ?? true);
+  const [requiereConsumir, setRequiereConsumir] = useState(
+    banoExistente?.requiere_consumir ?? false
+  );
+  const [tienePapel, setTienePapel] = useState(banoExistente?.tiene_papel ?? false);
+  const [tieneJabon, setTieneJabon] = useState(banoExistente?.tiene_jabon ?? false);
+  const [tieneSecador, setTieneSecador] = useState(banoExistente?.tiene_secador ?? false);
+  const [esAccesible, setEsAccesible] = useState(banoExistente?.es_accesible ?? false);
+  const [tieneCambiador, setTieneCambiador] = useState(
+    banoExistente?.tiene_cambiador ?? false
+  );
 
   const [mensaje, setMensaje] = useState("");
   const [guardando, setGuardando] = useState(false);
@@ -79,19 +87,17 @@ export default function FormularioBano({
 
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user) {
-      setMensaje("Debes iniciar sesión para añadir un baño.");
+      setMensaje("Debes iniciar sesión.");
       setGuardando(false);
       return;
     }
 
-    const { error } = await supabase.from("banos").insert({
+    const datos = {
       nombre,
       tipo,
       descripcion: descripcion || null,
       direccion: direccion || null,
       horario: horario || null,
-      created_by: userData.user.id,
-      ubicacion: `POINT(${punto.lng} ${punto.lat})`,
       es_gratis: esGratis,
       requiere_consumir: requiereConsumir,
       tiene_papel: tienePapel,
@@ -99,7 +105,24 @@ export default function FormularioBano({
       tiene_secador: tieneSecador,
       es_accesible: esAccesible,
       tiene_cambiador: tieneCambiador,
-    });
+    };
+
+    let error;
+
+    if (editando) {
+      const res = await supabase
+        .from("banos")
+        .update(datos)
+        .eq("id", banoExistente!.id);
+      error = res.error;
+    } else {
+      const res = await supabase.from("banos").insert({
+        ...datos,
+        created_by: userData.user.id,
+        ubicacion: `POINT(${punto!.lng} ${punto!.lat})`,
+      });
+      error = res.error;
+    }
 
     if (error) {
       setMensaje("Error: " + error.message);
@@ -113,7 +136,9 @@ export default function FormularioBano({
     <Dialog open onOpenChange={(v) => !v && onCerrar()}>
       <DialogContent className="z-[9999] max-h-[85vh] overflow-y-auto overscroll-contain rounded-3xl">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">Añadir un baño 🧻</DialogTitle>
+          <DialogTitle className="text-xl font-bold">
+            {editando ? "Editar baño 🧻" : "Añadir un baño 🧻"}
+          </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -163,7 +188,6 @@ export default function FormularioBano({
             />
           </div>
 
-          {/* Características */}
           <div className="space-y-2">
             <Label>¿Qué tiene este baño?</Label>
             <div className="flex flex-wrap gap-2">
@@ -211,7 +235,7 @@ export default function FormularioBano({
               disabled={guardando || !nombre}
               className="flex-1"
             >
-              Guardar baño
+              {editando ? "Guardar cambios" : "Guardar baño"}
             </Button>
           </div>
         </div>
