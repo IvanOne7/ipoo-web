@@ -10,6 +10,16 @@ const nunito = Nunito({
 export const metadata: Metadata = {
   title: "iPoo — Encuentra tu baño",
   description: "Localiza, puntúa y reseña baños públicos cerca de ti.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "iPoo",
+  },
+};
+
+export const viewport = {
+  themeColor: "#14b8a6",
 };
 
 export default function RootLayout({
