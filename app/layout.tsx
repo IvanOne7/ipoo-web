@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import "./globals.css";
+import RegistrarSW from "@/components/registrar-sw";
 
 const nunito = Nunito({
   subsets: ["latin"],
@@ -22,12 +23,16 @@ export const viewport = {
   themeColor: "#14b8a6",
 };
 
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es">
-      <body className={nunito.className}>{children}</body>
+      <body className={nunito.className}>
+        <RegistrarSW />
+        {children}
+      </body>
     </html>
   );
 }
