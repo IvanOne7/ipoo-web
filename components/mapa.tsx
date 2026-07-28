@@ -129,7 +129,7 @@ function CapaBanos({
                 g.banos[0].rating_medio,
                 g.banos[0].total_valoraciones
               )}
-              size={40}
+              size={55}
               verificado={!!g.banos[0].verificado_dueno}
             />
           </AdvancedMarker>
