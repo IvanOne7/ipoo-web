@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useIdioma } from "@/lib/idiomas";
 
 export type Bano = {
   id: string;
@@ -25,9 +26,9 @@ export type Bano = {
   es_accesible: boolean | null;
   tiene_cambiador: boolean | null;
   horario: string | null;
- verificado: boolean | null;
+  verificado: boolean | null;
   created_by: string | null;
-verificado_dueno: boolean | null;
+  verificado_dueno: boolean | null;
   cerrado_temporal: boolean | null;
 };
 
@@ -39,24 +40,7 @@ type Criterio =
   | "media_equipamiento"
   | "media_accesibilidad";
 
-const CRITERIOS: { valor: Criterio; etiqueta: string }[] = [
-  { valor: "cercania", etiqueta: "Más cercanos" },
-  { valor: "rating_medio", etiqueta: "Mejor valorados" },
-  { valor: "media_limpieza", etiqueta: "Más limpios" },
-  { valor: "media_olor", etiqueta: "Mejor olor" },
-  { valor: "media_equipamiento", etiqueta: "Mejor equipados" },
-  { valor: "media_accesibilidad", etiqueta: "Más accesibles" },
-];
-
 type Filtro = "gratis" | "papel" | "accesible" | "cambiador" | "sin_consumir";
-
-const FILTROS: { valor: Filtro; etiqueta: string }[] = [
-  { valor: "gratis", etiqueta: "Gratis" },
-  { valor: "papel", etiqueta: "Con papel" },
-  { valor: "accesible", etiqueta: "Accesible ♿" },
-  { valor: "cambiador", etiqueta: "Cambiador 🍼" },
-  { valor: "sin_consumir", etiqueta: "Sin consumir" },
-];
 
 const ETIQUETAS_TIPO: Record<string, string> = {
   publico_calle: "Público",
@@ -102,6 +86,11 @@ function colorEstado(rating: number, total: number): string {
   return "bg-amber-900";
 }
 
+function formatearDistancia(metros: number): string {
+  if (metros < 1000) return `${Math.round(metros)} m`;
+  return `${(metros / 1000).toFixed(1)} km`;
+}
+
 export default function PanelBuscador({
   banos,
   onSeleccion,
@@ -109,10 +98,28 @@ export default function PanelBuscador({
   banos: Bano[];
   onSeleccion: (b: Bano) => void;
 }) {
+  const { t } = useIdioma();
   const [abierto, setAbierto] = useState(false);
   const [criterio, setCriterio] = useState<Criterio>("cercania");
   const [busqueda, setBusqueda] = useState("");
   const [filtrosActivos, setFiltrosActivos] = useState<Filtro[]>([]);
+
+  const FILTROS: { valor: Filtro; etiqueta: string }[] = [
+    { valor: "gratis", etiqueta: t("filtro_gratis") },
+    { valor: "papel", etiqueta: t("filtro_con_papel") },
+    { valor: "accesible", etiqueta: t("filtro_accesible") },
+    { valor: "cambiador", etiqueta: t("filtro_cambiador") },
+    { valor: "sin_consumir", etiqueta: t("filtro_sin_consumir") },
+  ];
+
+  const CRITERIOS: { valor: Criterio; etiqueta: string }[] = [
+    { valor: "cercania", etiqueta: t("orden_cercanos") },
+    { valor: "rating_medio", etiqueta: t("orden_mejor_valorados") },
+    { valor: "media_limpieza", etiqueta: t("orden_mas_limpios") },
+    { valor: "media_olor", etiqueta: t("orden_mejor_olor") },
+    { valor: "media_equipamiento", etiqueta: t("orden_mejor_equipados") },
+    { valor: "media_accesibilidad", etiqueta: t("orden_mas_accesibles") },
+  ];
 
   function alternarFiltro(f: Filtro) {
     setFiltrosActivos((prev) =>
@@ -120,7 +127,6 @@ export default function PanelBuscador({
     );
   }
 
-  // Filtrar por texto y por características, luego ordenar
   const filtrados = banos.filter((b) => {
     if (busqueda.trim()) {
       const texto = normalizar(
@@ -141,7 +147,7 @@ export default function PanelBuscador({
         className="absolute left-4 top-20 z-10 flex items-center gap-2 rounded-full bg-card px-4 py-2.5 text-sm font-semibold shadow-lg ring-1 ring-black/5 transition hover:shadow-xl"
       >
         <span className="text-base">🔍</span>
-        Buscar baños
+        {t("buscar_banos")}
       </button>
 
       {/* Fondo oscurecido */}
@@ -156,7 +162,7 @@ export default function PanelBuscador({
       {abierto && (
         <div className="absolute inset-y-0 left-0 z-30 flex w-80 max-w-[85vw] flex-col bg-card shadow-2xl">
           <div className="flex items-center justify-between border-b px-5 py-4">
-            <h2 className="text-lg font-bold">Buscar baños</h2>
+            <h2 className="text-lg font-bold">{t("buscar_banos")}</h2>
             <button
               onClick={() => setAbierto(false)}
               className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted"
@@ -171,7 +177,7 @@ export default function PanelBuscador({
               type="text"
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
-              placeholder="Buscar por nombre o zona…"
+              placeholder={t("buscar_placeholder")}
               className="w-full rounded-full border border-input bg-background px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/40"
             />
           </div>
@@ -179,7 +185,7 @@ export default function PanelBuscador({
           {/* Filtros rápidos */}
           <div className="border-b px-4 py-3">
             <p className="mb-2 text-xs font-semibold text-muted-foreground">
-              Filtros rápidos
+              {t("filtros_rapidos")}
             </p>
             <div className="flex flex-wrap gap-2">
               {FILTROS.map((f) => (
@@ -200,7 +206,7 @@ export default function PanelBuscador({
                   onClick={() => setFiltrosActivos([])}
                   className="rounded-full px-3 py-1.5 text-xs font-semibold text-primary underline"
                 >
-                  Limpiar
+                  {t("limpiar")}
                 </button>
               )}
             </div>
@@ -209,7 +215,7 @@ export default function PanelBuscador({
           {/* Chips de orden */}
           <div className="border-b px-4 py-3">
             <p className="mb-2 text-xs font-semibold text-muted-foreground">
-              Ordenar por
+              {t("ordenar_por")}
             </p>
             <div className="flex flex-wrap gap-2">
               {CRITERIOS.map((c) => (
@@ -235,8 +241,8 @@ export default function PanelBuscador({
                 <span className="text-3xl">🧻</span>
                 <p className="text-sm text-muted-foreground">
                   {banos.length === 0
-                    ? "No hay baños cerca todavía."
-                    : "Ningún baño coincide con la búsqueda."}
+                    ? t("sin_banos_cerca")
+                    : t("ninguno_coincide")}
                 </p>
               </div>
             )}
@@ -272,12 +278,12 @@ export default function PanelBuscador({
                     <div className="mt-1 flex flex-wrap gap-1">
                       {b.es_gratis && (
                         <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
-                          Gratis
+                          {t("filtro_gratis")}
                         </span>
                       )}
                       {b.tiene_papel && (
                         <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
-                          Papel
+                          {t("filtro_con_papel")}
                         </span>
                       )}
                       {b.es_accesible && (
@@ -298,11 +304,15 @@ export default function PanelBuscador({
                           {"🧻".repeat(Math.round(b.rating_medio))}{" "}
                           <span className="text-muted-foreground">
                             {b.rating_medio}/5 · {b.total_valoraciones}{" "}
-                            {b.total_valoraciones === 1 ? "opinión" : "opiniones"}
+                            {b.total_valoraciones === 1
+                              ? t("opinion_singular")
+                              : t("opinion_plural")}
                           </span>
                         </>
                       ) : (
-                        <span className="text-muted-foreground">Sin valorar</span>
+                        <span className="text-muted-foreground">
+                          {t("sin_valorar")}
+                        </span>
                       )}
                     </p>
                   </div>
@@ -314,9 +324,4 @@ export default function PanelBuscador({
       )}
     </>
   );
-}
-
-function formatearDistancia(metros: number): string {
-  if (metros < 1000) return `${Math.round(metros)} m`;
-  return `${(metros / 1000).toFixed(1)} km`;
 }

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getRadio, setRadio } from "@/lib/preferencias";
 import { rangoDesdePuntos, progresoHaciaSiguiente } from "@/lib/rangos";
+import { useIdioma, IDIOMAS } from "@/lib/idiomas";
 
 type Valoracion = {
   id: string;
@@ -30,6 +31,7 @@ const [puntos, setPuntos] = useState(0);
   const [banosPublicados, setBanosPublicados] = useState(0);
   const [guardando, setGuardando] = useState(false);
   const [mensaje, setMensaje] = useState("");
+const { idioma, setIdioma } = useIdioma();
 
   useEffect(() => {
     async function cargar() {
@@ -277,6 +279,25 @@ const [puntos, setPuntos] = useState(0);
             <a href="/legal/cookies" className="text-primary hover:underline">
               Política de cookies
             </a>
+          </div>
+        </section>
+<section className="rounded-2xl border bg-card p-6 shadow-sm">
+          <h2 className="mb-3 text-lg font-semibold">Idioma</h2>
+          <div className="flex flex-wrap gap-2">
+            {IDIOMAS.map((i) => (
+              <button
+                key={i.codigo}
+                onClick={() => setIdioma(i.codigo)}
+                className={`flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
+                  idioma === i.codigo
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-input bg-card hover:bg-muted"
+                }`}
+              >
+                <span>{i.bandera}</span>
+                {i.nombre}
+              </button>
+            ))}
           </div>
         </section>
 

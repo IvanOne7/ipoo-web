@@ -17,6 +17,7 @@ import BotonEmergencia from "@/components/boton-emergencia";
 import BarraNavegacion from "@/components/barra-navegacion";
 import MarcadorBano from "@/components/marcador-bano";
 import { Button } from "@/components/ui/button";
+import { useIdioma } from "@/lib/idiomas";
 
 type Grupo = {
   lat: number;
@@ -166,6 +167,7 @@ export default function Mapa() {
   const [modoAnadir, setModoAnadir] = useState(false);
   const [banoEditar, setBanoEditar] = useState<Bano | null>(null);
   const [haySesion, setHaySesion] = useState<boolean | null>(null);
+  const { t } = useIdioma();
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -277,7 +279,7 @@ export default function Mapa() {
               className="absolute bottom-6 left-6 z-10 rounded-full shadow-lg"
               size="lg"
             >
-              ➕ Añadir baño
+              {t("anadir_bano")}
             </Button>
           </>
         )}
@@ -295,7 +297,7 @@ export default function Mapa() {
 
             <div className="absolute inset-x-0 top-20 z-30 flex justify-center px-4">
               <p className="rounded-full bg-card px-4 py-2 text-sm font-semibold shadow-lg">
-                Mueve el mapa para colocar el baño
+                {t("mueve_mapa")}
               </p>
             </div>
 
@@ -306,14 +308,14 @@ export default function Mapa() {
                 className="rounded-full shadow-lg"
                 size="lg"
               >
-                Cancelar
+                {t("cancelar")}
               </Button>
               <Button
                 onClick={confirmarUbicacion}
                 className="rounded-full shadow-lg"
                 size="lg"
               >
-                Confirmar aquí
+                {t("confirmar_aqui")}
               </Button>
             </div>
           </>

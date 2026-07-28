@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import SelectorPuntuacion from "@/components/selector-puntuacion";
 import FormularioReclamar from "@/components/formulario-reclamar";
+import { useIdioma } from "@/lib/idiomas";
 import type { Bano } from "@/components/panel-buscador";
 
 type Valoracion = {
@@ -72,6 +73,11 @@ function urlComoLlegar(lat: number, lng: number) {
   return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
 }
 
+function formatearDistancia(metros: number): string {
+  if (metros < 1000) return `${Math.round(metros)} m`;
+  return `${(metros / 1000).toFixed(1)} km`;
+}
+
 export default function FichaBano({
   bano,
   onCerrar,
@@ -83,6 +89,7 @@ export default function FichaBano({
   onValorado: () => void;
   onEditar: () => void;
 }) {
+  const { t } = useIdioma();
   const banoId = bano.id;
   const nombre = bano.nombre;
   const distancia = bano.distancia_metros;
@@ -137,13 +144,13 @@ export default function FichaBano({
 
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user) {
-      setMensaje("Debes iniciar sesión para valorar.");
+      setMensaje(t("debes_iniciar_valorar"));
       setGuardando(false);
       return;
     }
 
     if (general === 0) {
-      setMensaje("Pon al menos la puntuación general.");
+      setMensaje(t("pon_general"));
       setGuardando(false);
       return;
     }
@@ -156,7 +163,7 @@ export default function FichaBano({
           .from("fotos-banos")
           .upload(nombreArchivo, archivo);
         if (errSubida) {
-          setMensaje("No se pudo subir la foto: " + errSubida.message);
+          setMensaje("Error: " + errSubida.message);
           setGuardando(false);
           return;
         }
@@ -181,7 +188,7 @@ export default function FichaBano({
 
     if (error) {
       if (error.code === "23505") {
-        setMensaje("Ya has valorado este baño.");
+        setMensaje(t("ya_valoraste"));
       } else {
         setMensaje("Error: " + error.message);
       }
@@ -200,13 +207,13 @@ export default function FichaBano({
               {nombre}
               {bano.verificado_dueno && (
                 <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
-                  ✓ Verificado por el local
+                  {t("verificado_local")}
                 </span>
               )}
             </DialogTitle>
             {distancia !== undefined && (
               <p className="text-sm font-semibold text-primary">
-                📍 A {formatearDistancia(distancia)} de ti
+                📍 {formatearDistancia(distancia)} {t("a_x_de_ti")}
               </p>
             )}
           </DialogHeader>
@@ -216,7 +223,7 @@ export default function FichaBano({
             <div className="space-y-5">
               {bano.cerrado_temporal && (
                 <div className="rounded-2xl bg-amber-100 p-3 text-center text-sm font-semibold text-amber-800">
-                  ⚠️ Cerrado temporalmente
+                  {t("cerrado_temporal")}
                 </div>
               )}
 
@@ -230,17 +237,17 @@ export default function FichaBano({
                 )}
 
                 <div className="flex flex-wrap gap-1.5">
-                  <Insignia activa={bano.es_gratis} texto="Gratis" />
+                  <Insignia activa={bano.es_gratis} texto={t("filtro_gratis")} />
                   {bano.requiere_consumir && (
                     <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800">
-                      Hay que consumir
+                      {t("hay_que_consumir")}
                     </span>
                   )}
-                  <Insignia activa={bano.tiene_papel} texto="Papel" />
-                  <Insignia activa={bano.tiene_jabon} texto="Jabón" />
-                  <Insignia activa={bano.tiene_secador} texto="Secador" />
-                  <Insignia activa={bano.es_accesible} texto="Accesible ♿" />
-                  <Insignia activa={bano.tiene_cambiador} texto="Cambiador 🍼" />
+                  <Insignia activa={bano.tiene_papel} texto={t("ins_papel")} />
+                  <Insignia activa={bano.tiene_jabon} texto={t("ins_jabon")} />
+                  <Insignia activa={bano.tiene_secador} texto={t("ins_secador")} />
+                  <Insignia activa={bano.es_accesible} texto={t("ins_accesible")} />
+                  <Insignia activa={bano.tiene_cambiador} texto={t("ins_cambiador")} />
                 </div>
 
                 {bano.descripcion && (
@@ -257,7 +264,7 @@ export default function FichaBano({
                     )
                   }
                 >
-                  🧭 Cómo llegar
+                  {t("como_llegar")}
                 </Button>
 
                 {miId && bano.created_by === miId && (
@@ -266,7 +273,7 @@ export default function FichaBano({
                     className="w-full text-sm"
                     onClick={onEditar}
                   >
-                    ✏️ Editar este baño
+                    {t("editar_bano")}
                   </Button>
                 )}
 
@@ -276,20 +283,20 @@ export default function FichaBano({
                     className="w-full text-sm"
                     onClick={() => setReclamando(true)}
                   >
-                    🏪 Soy el propietario
+                    {t("soy_propietario")}
                   </Button>
                 )}
               </div>
 
               {cargando ? (
-                <p className="text-sm text-muted-foreground">Cargando…</p>
+                <p className="text-sm text-muted-foreground">{t("cargando")}</p>
               ) : valoraciones.length === 0 ? (
                 <div className="flex flex-col items-center gap-2 rounded-2xl bg-muted/50 py-8 text-center">
                   <span className="text-3xl">🧻</span>
                   <p className="text-sm text-muted-foreground">
-                    Aún no hay valoraciones.
+                    {t("sin_valoraciones")}
                     <br />
-                    ¡Sé el primero en opinar!
+                    {t("se_primero")}
                   </p>
                 </div>
               ) : (
@@ -300,28 +307,30 @@ export default function FichaBano({
                       <span className="text-2xl font-extrabold leading-none">
                         {mediaGeneral.toFixed(1)}
                       </span>
-                      <span className="text-[10px] opacity-80">de 5</span>
+                      <span className="text-[10px] opacity-80">{t("de_5")}</span>
                     </div>
                     <div>
                       <p className="text-lg">{"🧻".repeat(Math.round(mediaGeneral))}</p>
                       <p className="text-xs text-muted-foreground">
                         {valoraciones.length}{" "}
-                        {valoraciones.length === 1 ? "opinión" : "opiniones"}
+                        {valoraciones.length === 1
+                          ? t("opinion_singular")
+                          : t("opinion_plural")}
                       </p>
                     </div>
                   </div>
 
                   {/* Barras por criterio */}
                   <div className="space-y-2">
-                    <BarraCriterio etiqueta="Limpieza" valor={media(valoraciones, "limpieza")} />
-                    <BarraCriterio etiqueta="Olor" valor={media(valoraciones, "olor")} />
-                    <BarraCriterio etiqueta="Equipamiento" valor={media(valoraciones, "equipamiento")} />
-                    <BarraCriterio etiqueta="Accesibilidad" valor={media(valoraciones, "accesibilidad")} />
+                    <BarraCriterio etiqueta={t("crit_limpieza")} valor={media(valoraciones, "limpieza")} />
+                    <BarraCriterio etiqueta={t("crit_olor")} valor={media(valoraciones, "olor")} />
+                    <BarraCriterio etiqueta={t("crit_equipamiento")} valor={media(valoraciones, "equipamiento")} />
+                    <BarraCriterio etiqueta={t("crit_accesibilidad")} valor={media(valoraciones, "accesibilidad")} />
                   </div>
 
                   {/* Opiniones */}
                   <div className="space-y-3 border-t pt-4">
-                    <p className="text-sm font-semibold">Opiniones</p>
+                    <p className="text-sm font-semibold">{t("opiniones_titulo")}</p>
                     {valoraciones.map((v) => (
                       <div key={v.id} className="rounded-2xl border bg-card p-3 text-sm shadow-sm">
                         <p>{"🧻".repeat(v.puntuacion_general)}</p>
@@ -343,7 +352,7 @@ export default function FichaBano({
                         {v.respuesta_dueno && (
                           <div className="mt-2 rounded-xl bg-primary/5 p-2">
                             <p className="text-xs font-semibold text-primary">
-                              🏪 Respuesta del local
+                              {t("respuesta_local")}
                             </p>
                             <p className="mt-0.5">{v.respuesta_dueno}</p>
                           </div>
@@ -356,10 +365,10 @@ export default function FichaBano({
 
               <div className="flex gap-2 border-t pt-4">
                 <Button variant="outline" onClick={onCerrar} className="flex-1">
-                  Cerrar
+                  {t("cerrar")}
                 </Button>
                 <Button onClick={() => setModo("valorar")} className="flex-1">
-                  Valorar 🧻
+                  {t("valorar")}
                 </Button>
               </div>
             </div>
@@ -369,22 +378,22 @@ export default function FichaBano({
           {modo === "valorar" && (
             <div className="space-y-4">
               <div className="space-y-3 rounded-2xl bg-muted/40 p-4">
-                <SelectorPuntuacion etiqueta="General" valor={general} onChange={setGeneral} />
-                <SelectorPuntuacion etiqueta="Limpieza" valor={limpieza} onChange={setLimpieza} />
-                <SelectorPuntuacion etiqueta="Olor" valor={olor} onChange={setOlor} />
-                <SelectorPuntuacion etiqueta="Equipamiento" valor={equipamiento} onChange={setEquipamiento} />
-                <SelectorPuntuacion etiqueta="Accesibilidad" valor={accesibilidad} onChange={setAccesibilidad} />
+                <SelectorPuntuacion etiqueta={t("crit_general")} valor={general} onChange={setGeneral} />
+                <SelectorPuntuacion etiqueta={t("crit_limpieza")} valor={limpieza} onChange={setLimpieza} />
+                <SelectorPuntuacion etiqueta={t("crit_olor")} valor={olor} onChange={setOlor} />
+                <SelectorPuntuacion etiqueta={t("crit_equipamiento")} valor={equipamiento} onChange={setEquipamiento} />
+                <SelectorPuntuacion etiqueta={t("crit_accesibilidad")} valor={accesibilidad} onChange={setAccesibilidad} />
               </div>
 
               <Textarea
-                placeholder="¿Cómo estaba? Cuéntanos…"
+                placeholder={t("como_estaba")}
                 value={comentario}
                 onChange={(e) => setComentario(e.target.value)}
                 className="rounded-2xl"
               />
 
               <div className="space-y-1">
-                <label className="text-sm font-medium">Fotos (opcional)</label>
+                <label className="text-sm font-medium">{t("fotos_opcional")}</label>
                 <input
                   type="file"
                   accept="image/*"
@@ -402,10 +411,10 @@ export default function FichaBano({
 
               <div className="flex gap-2 border-t pt-4">
                 <Button variant="outline" onClick={() => setModo("ver")} className="flex-1">
-                  Volver
+                  {t("volver")}
                 </Button>
                 <Button onClick={guardar} disabled={guardando} className="flex-1">
-                  Enviar valoración
+                  {t("enviar_valoracion")}
                 </Button>
               </div>
             </div>
@@ -437,9 +446,4 @@ export default function FichaBano({
       )}
     </>
   );
-}
-
-function formatearDistancia(metros: number): string {
-  if (metros < 1000) return `${Math.round(metros)} m`;
-  return `${(metros / 1000).toFixed(1)} km`;
 }

@@ -12,14 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { useIdioma } from "@/lib/idiomas";
 import type { Bano } from "@/components/panel-buscador";
-
-const TIPOS = [
-  { valor: "publico_calle", etiqueta: "Público de calle" },
-  { valor: "centro_comercial", etiqueta: "Centro comercial" },
-  { valor: "hosteleria", etiqueta: "Hostelería" },
-  { valor: "otro", etiqueta: "Otro" },
-];
 
 function Casilla({
   etiqueta,
@@ -57,8 +51,16 @@ export default function FormularioBano({
   onCerrar: () => void;
   onGuardado: () => void;
 }) {
+  const { t } = useIdioma();
   const supabase = createClient();
   const editando = !!banoExistente;
+
+  const TIPOS = [
+    { valor: "publico_calle", etiqueta: t("tipo_publico") },
+    { valor: "centro_comercial", etiqueta: t("tipo_centro") },
+    { valor: "hosteleria", etiqueta: t("tipo_hosteleria") },
+    { valor: "otro", etiqueta: t("tipo_otro") },
+  ];
 
   const [nombre, setNombre] = useState(banoExistente?.nombre ?? "");
   const [tipo, setTipo] = useState(banoExistente?.tipo ?? "publico_calle");
@@ -87,7 +89,7 @@ export default function FormularioBano({
 
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user) {
-      setMensaje("Debes iniciar sesión.");
+      setMensaje(t("debes_iniciar"));
       setGuardando(false);
       return;
     }
@@ -137,13 +139,13 @@ export default function FormularioBano({
       <DialogContent className="z-[9999] max-h-[85vh] overflow-y-auto overscroll-contain rounded-3xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">
-            {editando ? "Editar baño 🧻" : "Añadir un baño 🧻"}
+            {editando ? t("titulo_editar") : t("titulo_anadir")}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="nombre">Nombre del sitio *</Label>
+            <Label htmlFor="nombre">{t("nombre_sitio")}</Label>
             <Input
               id="nombre"
               value={nombre}
@@ -153,23 +155,23 @@ export default function FormularioBano({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="tipo">Tipo de establecimiento</Label>
+            <Label htmlFor="tipo">{t("tipo_establecimiento")}</Label>
             <select
               id="tipo"
               value={tipo}
               onChange={(e) => setTipo(e.target.value)}
               className="w-full rounded-xl border border-input bg-card px-3 py-2 text-sm"
             >
-              {TIPOS.map((t) => (
-                <option key={t.valor} value={t.valor}>
-                  {t.etiqueta}
+              {TIPOS.map((tp) => (
+                <option key={tp.valor} value={tp.valor}>
+                  {tp.etiqueta}
                 </option>
               ))}
             </select>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="direccion">Dirección (opcional)</Label>
+            <Label htmlFor="direccion">{t("direccion_opcional")}</Label>
             <Input
               id="direccion"
               value={direccion}
@@ -179,7 +181,7 @@ export default function FormularioBano({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="horario">Horario (opcional)</Label>
+            <Label htmlFor="horario">{t("horario_opcional")}</Label>
             <Input
               id="horario"
               value={horario}
@@ -188,21 +190,22 @@ export default function FormularioBano({
             />
           </div>
 
+          {/* Características */}
           <div className="space-y-2">
-            <Label>¿Qué tiene este baño?</Label>
+            <Label>{t("que_tiene")}</Label>
             <div className="flex flex-wrap gap-2">
-              <Casilla etiqueta="Gratis" valor={esGratis} onChange={setEsGratis} />
+              <Casilla etiqueta={t("filtro_gratis")} valor={esGratis} onChange={setEsGratis} />
               <Casilla
-                etiqueta="Hay que consumir"
+                etiqueta={t("hay_que_consumir")}
                 valor={requiereConsumir}
                 onChange={setRequiereConsumir}
               />
-              <Casilla etiqueta="Papel" valor={tienePapel} onChange={setTienePapel} />
-              <Casilla etiqueta="Jabón" valor={tieneJabon} onChange={setTieneJabon} />
-              <Casilla etiqueta="Secador" valor={tieneSecador} onChange={setTieneSecador} />
-              <Casilla etiqueta="Accesible ♿" valor={esAccesible} onChange={setEsAccesible} />
+              <Casilla etiqueta={t("ins_papel")} valor={tienePapel} onChange={setTienePapel} />
+              <Casilla etiqueta={t("ins_jabon")} valor={tieneJabon} onChange={setTieneJabon} />
+              <Casilla etiqueta={t("ins_secador")} valor={tieneSecador} onChange={setTieneSecador} />
+              <Casilla etiqueta={t("ins_accesible")} valor={esAccesible} onChange={setEsAccesible} />
               <Casilla
-                etiqueta="Cambiador 🍼"
+                etiqueta={t("ins_cambiador")}
                 valor={tieneCambiador}
                 onChange={setTieneCambiador}
               />
@@ -210,12 +213,12 @@ export default function FormularioBano({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="descripcion">Notas (opcional)</Label>
+            <Label htmlFor="descripcion">{t("notas_opcional")}</Label>
             <Textarea
               id="descripcion"
               value={descripcion}
               onChange={(e) => setDescripcion(e.target.value)}
-              placeholder="Cómo llegar, dónde pedir la llave…"
+              placeholder={t("notas_placeholder")}
               className="rounded-2xl"
             />
           </div>
@@ -228,14 +231,14 @@ export default function FormularioBano({
 
           <div className="flex gap-2 border-t pt-4">
             <Button variant="outline" onClick={onCerrar} className="flex-1">
-              Cancelar
+              {t("cancelar")}
             </Button>
             <Button
               onClick={guardar}
               disabled={guardando || !nombre}
               className="flex-1"
             >
-              {editando ? "Guardar cambios" : "Guardar baño"}
+              {editando ? t("guardar_cambios") : t("guardar_bano")}
             </Button>
           </div>
         </div>

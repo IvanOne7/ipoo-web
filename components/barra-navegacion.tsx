@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
+import { useIdioma } from "@/lib/idiomas";
 
 export default function BarraNavegacion() {
   const router = useRouter();
   const supabase = createClient();
   const [email, setEmail] = useState<string | null>(null);
   const [cargando, setCargando] = useState(true);
+const { t } = useIdioma();
 
   useEffect(() => {
     // Estado inicial de sesión
@@ -45,16 +47,16 @@ export default function BarraNavegacion() {
               {email}
             </span>
             <Button variant="ghost" size="sm" onClick={() => router.push("/ranking")}>
-              🏆 Ranking
+              {t("ranking")}
             </Button>
 <Button variant="ghost" size="sm" onClick={() => router.push("/mi-negocio")}>
-              🏪 Mi baño (Sólo negocios)
+              {t("mi_negocio")}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => router.push("/ajustes")}>
-              ⚙️ Ajustes
+           <Button variant="ghost" size="sm" onClick={() => router.push("/ajustes")}>
+              {t("ajustes")}
             </Button>
             <Button variant="outline" size="sm" onClick={cerrarSesion}>
-              Salir
+              {t("salir")}
             </Button>
           </>
         ) : (

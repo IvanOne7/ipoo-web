@@ -3,6 +3,7 @@ import { Nunito } from "next/font/google";
 import "./globals.css";
 import RegistrarSW from "@/components/registrar-sw";
 import BannerCookies from "@/components/banner-cookies";
+import { ProveedorIdioma } from "@/lib/idiomas";
 
 const nunito = Nunito({
   subsets: ["latin"],
@@ -30,10 +31,12 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es">
-     <body className={nunito.className}>
-        <RegistrarSW />
-        {children}
-        <BannerCookies />
+    <body className={nunito.className}>
+        <ProveedorIdioma>
+          <RegistrarSW />
+          {children}
+          <BannerCookies />
+        </ProveedorIdioma>
       </body>
     </html>
   );

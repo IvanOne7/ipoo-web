@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { useIdioma } from "@/lib/idiomas";
 
 export default function FormularioReclamar({
   banoId,
@@ -23,6 +24,7 @@ export default function FormularioReclamar({
   onCerrar: () => void;
 }) {
   const supabase = createClient();
+  const { t } = useIdioma();
   const [nombreNegocio, setNombreNegocio] = useState(nombreBano);
   const [email, setEmail] = useState("");
   const [mensaje, setMensaje] = useState("");
@@ -36,7 +38,7 @@ export default function FormularioReclamar({
 
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user) {
-      setAviso("Debes iniciar sesión.");
+      setAviso(t("debes_iniciar"));
       setEnviando(false);
       return;
     }
@@ -51,7 +53,7 @@ export default function FormularioReclamar({
 
     if (error) {
       if (error.code === "23505") {
-        setAviso("Ya has enviado una solicitud para este baño.");
+        setAviso(t("ya_solicitud"));
       } else {
         setAviso("Error: " + error.message);
       }
@@ -66,30 +68,24 @@ export default function FormularioReclamar({
       <DialogContent className="z-[9999] max-h-[85vh] overflow-y-auto overscroll-contain rounded-3xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">
-            Reclamar este baño 🏪
+            {t("reclamar_titulo")}
           </DialogTitle>
         </DialogHeader>
 
         {enviado ? (
           <div className="space-y-4 py-4 text-center">
             <span className="text-4xl">✅</span>
-            <p className="text-sm">
-              Solicitud enviada. Revisaremos que eres el propietario y verás el
-              sello de verificado en cuanto lo aprobemos.
-            </p>
+            <p className="text-sm">{t("reclamar_enviado")}</p>
             <Button onClick={onCerrar} className="w-full">
-              Entendido
+              {t("entendido")}
             </Button>
           </div>
         ) : (
           <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Si eres el dueño de este local, verifícalo para que aparezca con el
-              sello oficial.
-            </p>
+            <p className="text-sm text-muted-foreground">{t("reclamar_intro")}</p>
 
             <div className="space-y-2">
-              <Label htmlFor="negocio">Nombre del negocio *</Label>
+              <Label htmlFor="negocio">{t("nombre_negocio")}</Label>
               <Input
                 id="negocio"
                 value={nombreNegocio}
@@ -98,7 +94,7 @@ export default function FormularioReclamar({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email de contacto *</Label>
+              <Label htmlFor="email">{t("email_contacto")}</Label>
               <Input
                 id="email"
                 type="email"
@@ -109,12 +105,12 @@ export default function FormularioReclamar({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="msg">Mensaje (opcional)</Label>
+              <Label htmlFor="msg">{t("mensaje_opcional")}</Label>
               <Textarea
                 id="msg"
                 value={mensaje}
                 onChange={(e) => setMensaje(e.target.value)}
-                placeholder="Cuéntanos cómo verificar que eres el propietario…"
+                placeholder={t("reclamar_msg_placeholder")}
                 className="rounded-2xl"
               />
             </div>
@@ -127,14 +123,14 @@ export default function FormularioReclamar({
 
             <div className="flex gap-2 border-t pt-4">
               <Button variant="outline" onClick={onCerrar} className="flex-1">
-                Cancelar
+                {t("cancelar")}
               </Button>
               <Button
                 onClick={enviar}
                 disabled={enviando || !nombreNegocio || !email}
                 className="flex-1"
               >
-                Enviar solicitud
+                {t("enviar_solicitud")}
               </Button>
             </div>
           </div>
