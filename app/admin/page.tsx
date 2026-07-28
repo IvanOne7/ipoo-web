@@ -22,6 +22,18 @@ type BanoAdmin = {
   created_at: string;
 };
 
+type Reporte = {
+  id: string;
+  valoracion_id: string;
+  motivo: string | null;
+  created_at: string;
+  valoraciones: {
+    comentario: string | null;
+    fotos: string[];
+    bano_id: string;
+  } | null;
+};
+
 export default function AdminPage() {
   const router = useRouter();
   const supabase = createClient();
@@ -29,6 +41,7 @@ export default function AdminPage() {
   const [esAdmin, setEsAdmin] = useState<boolean | null>(null);
   const [reclamaciones, setReclamaciones] = useState<Reclamacion[]>([]);
   const [banos, setBanos] = useState<BanoAdmin[]>([]);
+  const [reportes, setReportes] = useState<Reporte[]>([]);
   const [aviso, setAviso] = useState("");
 
   useEffect(() => {
@@ -72,6 +85,13 @@ export default function AdminPage() {
       .order("created_at", { ascending: false })
       .limit(50);
     if (bs) setBanos(bs as BanoAdmin[]);
+
+    const { data: reps } = await supabase
+      .from("reportes")
+      .select("*, valoraciones(comentario, fotos, bano_id)")
+      .eq("estado", "pendiente")
+      .order("created_at", { ascending: false });
+    if (reps) setReportes(reps as unknown as Reporte[]);
   }
 
   async function aprobar(r: Reclamacion) {
@@ -100,6 +120,24 @@ export default function AdminPage() {
     if (!confirm(`¿Borrar el baño "${nombre}"? Esto no se puede deshacer.`)) return;
     await supabase.from("banos").delete().eq("id", id);
     setAviso(`Baño "${nombre}" borrado.`);
+    cargarDatos();
+  }
+
+  async function borrarResena(reporte: Reporte) {
+    if (!confirm("¿Borrar esta reseña definitivamente?")) return;
+    await supabase.from("valoraciones").delete().eq("id", reporte.valoracion_id);
+    await supabase.from("reportes").update({ estado: "revisado" }).eq("id", reporte.id);
+    setAviso("Reseña borrada.");
+    cargarDatos();
+  }
+
+  async function restaurarResena(reporte: Reporte) {
+    await supabase
+      .from("valoraciones")
+      .update({ oculta: false })
+      .eq("id", reporte.valoracion_id);
+    await supabase.from("reportes").update({ estado: "revisado" }).eq("id", reporte.id);
+    setAviso("Reseña restaurada.");
     cargarDatos();
   }
 
@@ -162,6 +200,49 @@ export default function AdminPage() {
                     onClick={() => rechazar(r)}
                   >
                     Rechazar
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Contenido reportado */}
+      <section className="mb-8 rounded-2xl border bg-card p-6 shadow-sm">
+        <h2 className="mb-4 text-lg font-semibold">
+          Contenido reportado ({reportes.length})
+        </h2>
+        {reportes.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            No hay contenido reportado.
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {reportes.map((r) => (
+              <div key={r.id} className="rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-sm">
+                {r.valoraciones?.comentario && (
+                  <p className="mb-2 italic">“{r.valoraciones.comentario}”</p>
+                )}
+                {r.valoraciones?.fotos && r.valoraciones.fotos.length > 0 && (
+                  <div className="mb-2 flex flex-wrap gap-2">
+                    {r.valoraciones.fotos.map((url) => (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        key={url}
+                        src={url}
+                        alt="Foto reportada"
+                        className="h-24 w-24 rounded-lg object-cover"
+                      />
+                    ))}
+                  </div>
+                )}
+                <div className="mt-2 flex gap-2">
+                  <Button size="sm" variant="destructive" onClick={() => borrarResena(r)}>
+                    Borrar reseña
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => restaurarResena(r)}>
+                    Restaurar
                   </Button>
                 </div>
               </div>

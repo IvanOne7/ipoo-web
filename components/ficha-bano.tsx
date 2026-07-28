@@ -122,6 +122,7 @@ export default function FichaBano({
       .from("valoraciones")
       .select("*")
       .eq("bano_id", banoId)
+      .eq("oculta", false)
       .order("created_at", { ascending: false })
       .then(({ data }) => {
         if (data) setValoraciones(data as Valoracion[]);
@@ -137,6 +138,28 @@ export default function FichaBano({
       ? valoraciones.reduce((s, v) => s + v.puntuacion_general, 0) /
         valoraciones.length
       : 0;
+
+  async function reportar(valoracionId: string) {
+    if (!confirm(t("reportar_confirmar"))) return;
+
+    const { data: userData } = await supabase.auth.getUser();
+    if (!userData.user) {
+      alert(t("debes_iniciar_valorar"));
+      return;
+    }
+
+    // Ocultar de inmediato
+    await supabase.rpc("ocultar_valoracion", { val_id: valoracionId });
+    // Registrar el reporte
+    await supabase.from("reportes").insert({
+      valoracion_id: valoracionId,
+      reportado_por: userData.user.id,
+    });
+
+    // Quitarla de la vista al instante
+    setValoraciones((prev) => prev.filter((v) => v.id !== valoracionId));
+    alert(t("reporte_gracias"));
+  }
 
   async function guardar() {
     setGuardando(true);
@@ -357,6 +380,12 @@ export default function FichaBano({
                             <p className="mt-0.5">{v.respuesta_dueno}</p>
                           </div>
                         )}
+                        <button
+                          onClick={() => reportar(v.id)}
+                          className="mt-2 text-xs text-muted-foreground hover:text-destructive"
+                        >
+                          ⚑ {t("reportar")}
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -401,6 +430,9 @@ export default function FichaBano({
                   onChange={(e) => setArchivos(e.target.files)}
                   className="block w-full rounded-xl border bg-card p-2 text-sm"
                 />
+                <p className="rounded-lg bg-amber-50 p-2 text-xs text-amber-800">
+                  ⚠️ {t("aviso_fotos")}
+                </p>
               </div>
 
               {mensaje && (

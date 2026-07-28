@@ -823,6 +823,34 @@ login_subtitulo: {
     fr: "Vérifiez votre e-mail pour confirmer votre compte !",
     it: "Controlla la tua email per confermare l'account!",
   },
+aviso_fotos: {
+    es: "Solo fotos del baño. Prohibido contenido ofensivo, personas o desnudos. Las infracciones se eliminan.",
+    en: "Toilet photos only. No offensive content, people or nudity. Violations will be removed.",
+    de: "Nur Toilettenfotos. Keine anstößigen Inhalte, Personen oder Nacktheit. Verstöße werden entfernt.",
+    fr: "Photos des toilettes uniquement. Pas de contenu offensant, de personnes ou de nudité. Les infractions seront supprimées.",
+    it: "Solo foto del bagno. Vietati contenuti offensivi, persone o nudità. Le violazioni saranno rimosse.",
+  },
+  reportar: {
+    es: "Reportar",
+    en: "Report",
+    de: "Melden",
+    fr: "Signaler",
+    it: "Segnala",
+  },
+  reportar_confirmar: {
+    es: "¿Reportar esta reseña por contenido inapropiado? Se ocultará de inmediato.",
+    en: "Report this review for inappropriate content? It will be hidden immediately.",
+    de: "Diese Bewertung wegen unangemessener Inhalte melden? Sie wird sofort ausgeblendet.",
+    fr: "Signaler cet avis pour contenu inapproprié ? Il sera masqué immédiatement.",
+    it: "Segnalare questa recensione per contenuto inappropriato? Verrà nascosta subito.",
+  },
+  reporte_gracias: {
+    es: "Gracias. La reseña se ha ocultado y la revisaremos.",
+    en: "Thanks. The review has been hidden and we'll review it.",
+    de: "Danke. Die Bewertung wurde ausgeblendet und wird geprüft.",
+    fr: "Merci. L'avis a été masqué et nous l'examinerons.",
+    it: "Grazie. La recensione è stata nascosta e la esamineremo.",
+  },
 };
 
 type Ctx = {
