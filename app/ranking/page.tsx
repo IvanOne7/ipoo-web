@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { rangoDesdePuntos } from "@/lib/rangos";
+import { useIdioma } from "@/lib/idiomas";
 
 type FilaRanking = {
   id: string;
@@ -20,6 +21,7 @@ const MEDALLAS = ["🥇", "🥈", "🥉"];
 export default function RankingPage() {
   const router = useRouter();
   const supabase = createClient();
+  const { t } = useIdioma();
   const [filas, setFilas] = useState<FilaRanking[]>([]);
   const [miId, setMiId] = useState<string | null>(null);
   const [cargando, setCargando] = useState(true);
@@ -44,21 +46,20 @@ export default function RankingPage() {
   return (
     <main className="mx-auto max-w-2xl px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Ranking 🏆</h1>
+        <h1 className="text-2xl font-bold">{t("ranking_titulo")}</h1>
         <Button variant="outline" size="sm" onClick={() => router.push("/")}>
-          Volver al mapa
+          {t("volver_mapa")}
         </Button>
       </div>
 
       <p className="mb-6 text-sm text-muted-foreground">
-        Gana puntos añadiendo baños (10 pts), valorándolos (5 pts) y subiendo
-        fotos (+3 pts).
+        {t("ranking_subtitulo")}
       </p>
 
       {cargando ? (
-        <p className="text-sm text-muted-foreground">Cargando…</p>
+        <p className="text-sm text-muted-foreground">{t("cargando")}</p>
       ) : filas.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Aún no hay nadie en el ranking.</p>
+        <p className="text-sm text-muted-foreground">{t("ranking_vacio")}</p>
       ) : (
         <div className="space-y-2">
           {filas.map((f, i) => {
@@ -95,15 +96,15 @@ export default function RankingPage() {
                     {f.username ?? "Anónimo"}
                     {soyYo && (
                       <span className="ml-2 text-xs font-normal text-primary">
-                        (tú)
+                        ({t("tu")})
                       </span>
                     )}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {rango.emoji} {rango.nombre}
+                    {rango.emoji} {t(rango.clave)}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {f.banos_publicados} baños · {f.valoraciones_hechas} valoraciones
+                    {f.banos_publicados} · {f.valoraciones_hechas}
                   </p>
                 </div>
 

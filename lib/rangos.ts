@@ -1,17 +1,17 @@
 export type Rango = {
-  nombre: string;
+  clave: string;
   emoji: string;
   minimo: number;
   siguiente: number | null;
 };
 
 const RANGOS: Rango[] = [
-  { nombre: "Papel de una capa", emoji: "🧻", minimo: 0, siguiente: 20 },
-  { nombre: "Trasero con rollo", emoji: "🚽", minimo: 20, siguiente: 50 },
-  { nombre: "Culo explorador", emoji: "🗺️", minimo: 50, siguiente: 100 },
-  { nombre: "Culo inquieto", emoji: "⭐", minimo: 100, siguiente: 200 },
-  { nombre: "Señor del trono", emoji: "👑", minimo: 200, siguiente: 500 },
-  { nombre: "Leyenda de iPoo", emoji: "💩", minimo: 500, siguiente: null },
+  { clave: "rango_1", emoji: "🧻", minimo: 0, siguiente: 20 },
+  { clave: "rango_2", emoji: "🚽", minimo: 20, siguiente: 50 },
+  { clave: "rango_3", emoji: "🗺️", minimo: 50, siguiente: 100 },
+  { clave: "rango_4", emoji: "⭐", minimo: 100, siguiente: 200 },
+  { clave: "rango_5", emoji: "👑", minimo: 200, siguiente: 500 },
+  { clave: "rango_6", emoji: "💩", minimo: 500, siguiente: null },
 ];
 
 export function rangoDesdePuntos(puntos: number): Rango {

@@ -21,17 +21,17 @@ type Valoracion = {
 export default function AjustesPage() {
   const router = useRouter();
   const supabase = createClient();
+  const { t, idioma, setIdioma } = useIdioma();
 
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [radio, setRadioState] = useState(5000);
   const [misValoraciones, setMisValoraciones] = useState<Valoracion[]>([]);
-const [puntos, setPuntos] = useState(0);
+  const [puntos, setPuntos] = useState(0);
   const [banosPublicados, setBanosPublicados] = useState(0);
   const [guardando, setGuardando] = useState(false);
   const [mensaje, setMensaje] = useState("");
-const { idioma, setIdioma } = useIdioma();
 
   useEffect(() => {
     async function cargar() {
@@ -52,40 +52,7 @@ const { idioma, setIdioma } = useIdioma();
         setUsername(perfil.username ?? "");
         setAvatarUrl(perfil.avatar_url);
       }
-{/* Mi nivel */}
-      <section className="mb-8 rounded-2xl border bg-card p-6 shadow-sm">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Mi nivel</h2>
-          <Button variant="outline" size="sm" onClick={() => router.push("/ranking")}>
-            Ver ranking 🏆
-          </Button>
-        </div>
 
-        <div className="flex items-center gap-4">
-          <span className="text-4xl">{rangoDesdePuntos(puntos).emoji}</span>
-          <div className="flex-1">
-            <p className="font-bold">{rangoDesdePuntos(puntos).nombre}</p>
-            <p className="text-sm text-muted-foreground">
-              {puntos} puntos · {banosPublicados} baños · {misValoraciones.length} valoraciones
-            </p>
-          </div>
-        </div>
-
-        {rangoDesdePuntos(puntos).siguiente !== null && (
-          <div className="mt-4">
-            <div className="h-2.5 overflow-hidden rounded-full bg-muted">
-              <div
-                className="h-full rounded-full bg-primary transition-all"
-                style={{ width: `${progresoHaciaSiguiente(puntos)}%` }}
-              />
-            </div>
-            <p className="mt-1.5 text-xs text-muted-foreground">
-              {rangoDesdePuntos(puntos).siguiente! - puntos} puntos para el
-              siguiente rango
-            </p>
-          </div>
-        )}
-      </section>
       // Mis valoraciones (con el nombre del baño)
       const { data: vals } = await supabase
         .from("valoraciones")
@@ -93,7 +60,8 @@ const { idioma, setIdioma } = useIdioma();
         .eq("user_id", userData.user.id)
         .order("created_at", { ascending: false });
       if (vals) setMisValoraciones(vals as unknown as Valoracion[]);
-// Mis puntos del ranking
+
+      // Mis puntos del ranking
       const { data: rank } = await supabase
         .from("ranking_usuarios")
         .select("puntos, banos_publicados")
@@ -121,8 +89,8 @@ const { idioma, setIdioma } = useIdioma();
 
     setRadio(radio);
 
-    if (error) setMensaje("No se pudo guardar: " + error.message);
-    else setMensaje("Cambios guardados.");
+    if (error) setMensaje(t("no_guardado") + error.message);
+    else setMensaje(t("cambios_guardados"));
     setGuardando(false);
   }
 
@@ -138,7 +106,7 @@ const { idioma, setIdioma } = useIdioma();
       .upload(nombreArchivo, archivo, { upsert: true });
 
     if (errSubida) {
-      setMensaje("Error al subir la foto: " + errSubida.message);
+      setMensaje("Error: " + errSubida.message);
       return;
     }
 
@@ -160,18 +128,20 @@ const { idioma, setIdioma } = useIdioma();
     router.refresh();
   }
 
+  const rango = rangoDesdePuntos(puntos);
+
   return (
     <main className="mx-auto max-w-2xl px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Ajustes</h1>
+        <h1 className="text-2xl font-bold">{t("ajustes_titulo")}</h1>
         <Button variant="outline" size="sm" onClick={() => router.push("/")}>
-          Volver al mapa
+          {t("volver_mapa")}
         </Button>
       </div>
 
       {/* Perfil */}
       <section className="mb-8 rounded-2xl border bg-card p-6 shadow-sm">
-        <h2 className="mb-4 text-lg font-semibold">Perfil</h2>
+        <h2 className="mb-4 text-lg font-semibold">{t("perfil")}</h2>
         <div className="flex items-center gap-4">
           <div className="h-20 w-20 overflow-hidden rounded-full bg-muted">
             {avatarUrl ? (
@@ -189,7 +159,7 @@ const { idioma, setIdioma } = useIdioma();
           </div>
           <div>
             <Label htmlFor="avatar" className="cursor-pointer text-sm text-primary underline">
-              Cambiar foto
+              {t("cambiar_foto")}
             </Label>
             <input
               id="avatar"
@@ -202,7 +172,7 @@ const { idioma, setIdioma } = useIdioma();
         </div>
 
         <div className="mt-4 space-y-2">
-          <Label htmlFor="username">Nombre de usuario</Label>
+          <Label htmlFor="username">{t("nombre_usuario")}</Label>
           <Input
             id="username"
             value={username}
@@ -216,11 +186,45 @@ const { idioma, setIdioma } = useIdioma();
         </div>
       </section>
 
+      {/* Mi nivel */}
+      <section className="mb-8 rounded-2xl border bg-card p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold">{t("mi_nivel")}</h2>
+          <Button variant="outline" size="sm" onClick={() => router.push("/ranking")}>
+            {t("ver_ranking")}
+          </Button>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <span className="text-4xl">{rango.emoji}</span>
+          <div className="flex-1">
+            <p className="font-bold">{t(rango.clave)}</p>
+            <p className="text-sm text-muted-foreground">
+              {puntos} {t("puntos")}
+            </p>
+          </div>
+        </div>
+
+        {rango.siguiente !== null && (
+          <div className="mt-4">
+            <div className="h-2.5 overflow-hidden rounded-full bg-muted">
+              <div
+                className="h-full rounded-full bg-primary transition-all"
+                style={{ width: `${progresoHaciaSiguiente(puntos)}%` }}
+              />
+            </div>
+            <p className="mt-1.5 text-xs text-muted-foreground">
+              {rango.siguiente - puntos} {t("puntos_siguiente")}
+            </p>
+          </div>
+        )}
+      </section>
+
       {/* Radio de búsqueda */}
       <section className="mb-8 rounded-2xl border bg-card p-6 shadow-sm">
-        <h2 className="mb-4 text-lg font-semibold">Radio de búsqueda</h2>
+        <h2 className="mb-4 text-lg font-semibold">{t("radio_busqueda")}</h2>
         <p className="mb-2 text-sm text-muted-foreground">
-          Buscar baños en un radio de <strong>{(radio / 1000).toFixed(1)} km</strong>.
+          {t("buscar_en_radio")} <strong>{(radio / 1000).toFixed(1)} km</strong>.
         </p>
         <input
           type="range"
@@ -236,7 +240,7 @@ const { idioma, setIdioma } = useIdioma();
       {/* Guardar */}
       <div className="mb-8 flex items-center gap-3">
         <Button onClick={guardarPerfil} disabled={guardando}>
-          Guardar cambios
+          {t("guardar_cambios")}
         </Button>
         {mensaje && <span className="text-sm text-muted-foreground">{mensaje}</span>}
       </div>
@@ -244,11 +248,11 @@ const { idioma, setIdioma } = useIdioma();
       {/* Mis valoraciones */}
       <section className="mb-8 rounded-2xl border bg-card p-6 shadow-sm">
         <h2 className="mb-4 text-lg font-semibold">
-          Mis valoraciones ({misValoraciones.length})
+          {t("mis_valoraciones")} ({misValoraciones.length})
         </h2>
         {misValoraciones.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            Aún no has valorado ningún baño.
+            {t("sin_mis_valoraciones")}
           </p>
         ) : (
           <div className="space-y-3">
@@ -264,46 +268,50 @@ const { idioma, setIdioma } = useIdioma();
           </div>
         )}
       </section>
-<section className="rounded-2xl border bg-card p-6 shadow-sm">
-          <h2 className="mb-3 text-lg font-semibold">Información y ayuda</h2>
-          <div className="flex flex-col gap-2 text-sm">
-            <a href="/ayuda" className="text-primary hover:underline">
-              Centro de ayuda
-            </a>
-            <a href="/legal/privacidad" className="text-primary hover:underline">
-              Política de privacidad
-            </a>
-            <a href="/legal/aviso-legal" className="text-primary hover:underline">
-              Aviso legal
-            </a>
-            <a href="/legal/cookies" className="text-primary hover:underline">
-              Política de cookies
-            </a>
-          </div>
-        </section>
-<section className="rounded-2xl border bg-card p-6 shadow-sm">
-          <h2 className="mb-3 text-lg font-semibold">Idioma</h2>
-          <div className="flex flex-wrap gap-2">
-            {IDIOMAS.map((i) => (
-              <button
-                key={i.codigo}
-                onClick={() => setIdioma(i.codigo)}
-                className={`flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
-                  idioma === i.codigo
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-input bg-card hover:bg-muted"
-                }`}
-              >
-                <span>{i.bandera}</span>
-                {i.nombre}
-              </button>
-            ))}
-          </div>
-        </section>
+
+      {/* Idioma */}
+      <section className="mb-8 rounded-2xl border bg-card p-6 shadow-sm">
+        <h2 className="mb-3 text-lg font-semibold">{t("idioma")}</h2>
+        <div className="flex flex-wrap gap-2">
+          {IDIOMAS.map((i) => (
+            <button
+              key={i.codigo}
+              onClick={() => setIdioma(i.codigo)}
+              className={`flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
+                idioma === i.codigo
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-input bg-card hover:bg-muted"
+              }`}
+            >
+              <span>{i.bandera}</span>
+              {i.nombre}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* Información y ayuda */}
+      <section className="mb-8 rounded-2xl border bg-card p-6 shadow-sm">
+        <h2 className="mb-3 text-lg font-semibold">{t("info_ayuda")}</h2>
+        <div className="flex flex-col gap-2 text-sm">
+          <a href="/ayuda" className="text-primary hover:underline">
+            {t("centro_ayuda")}
+          </a>
+          <a href="/legal/privacidad" className="text-primary hover:underline">
+            {t("politica_privacidad")}
+          </a>
+          <a href="/legal/aviso-legal" className="text-primary hover:underline">
+            {t("aviso_legal")}
+          </a>
+          <a href="/legal/cookies" className="text-primary hover:underline">
+            {t("politica_cookies")}
+          </a>
+        </div>
+      </section>
 
       {/* Cerrar sesión */}
       <Button variant="destructive" onClick={cerrarSesion}>
-        Cerrar sesión
+        {t("cerrar_sesion")}
       </Button>
     </main>
   );

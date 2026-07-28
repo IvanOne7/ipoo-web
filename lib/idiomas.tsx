@@ -630,6 +630,150 @@ reclamar_titulo: {
     fr: "Vous avez déjà envoyé une demande pour ces toilettes.",
     it: "Hai già inviato una richiesta per questo bagno.",
   },
+ranking_titulo: {
+    es: "🏆 Ranking",
+    en: "🏆 Ranking",
+    de: "🏆 Rangliste",
+    fr: "🏆 Classement",
+    it: "🏆 Classifica",
+  },
+  ranking_subtitulo: {
+    es: "Los mejores exploradores de baños",
+    en: "The top toilet explorers",
+    de: "Die besten Toiletten-Entdecker",
+    fr: "Les meilleurs explorateurs de toilettes",
+    it: "I migliori esploratori di bagni",
+  },
+  volver_mapa: {
+    es: "Volver al mapa",
+    en: "Back to map",
+    de: "Zurück zur Karte",
+    fr: "Retour à la carte",
+    it: "Torna alla mappa",
+  },
+  puntos: {
+    es: "puntos",
+    en: "points",
+    de: "Punkte",
+    fr: "points",
+    it: "punti",
+  },
+  tu: {
+    es: "Tú",
+    en: "You",
+    de: "Du",
+    fr: "Vous",
+    it: "Tu",
+  },
+  ranking_vacio: {
+    es: "Aún no hay nadie en el ranking. ¡Sé el primero!",
+    en: "No one on the ranking yet. Be the first!",
+    de: "Noch niemand in der Rangliste. Sei der Erste!",
+    fr: "Personne dans le classement. Soyez le premier !",
+    it: "Ancora nessuno in classifica. Sii il primo!",
+  },
+rango_1: {
+    es: "Papel de una capa",
+    en: "One-ply rookie",
+    de: "Einlagiges Blatt",
+    fr: "Papier une épaisseur",
+    it: "Carta a un velo",
+  },
+  rango_2: {
+    es: "Trasero con rollo",
+    en: "Roll wrangler",
+    de: "Rollen-Reiter",
+    fr: "As du rouleau",
+    it: "Domatore di rotoli",
+  },
+  rango_3: {
+    es: "Culo explorador",
+    en: "Loo explorer",
+    de: "Klo-Entdecker",
+    fr: "Explorateur du trône",
+    it: "Esploratore del cesso",
+  },
+  rango_4: {
+    es: "Culo inquieto",
+    en: "Restless rear",
+    de: "Ruheloser Hintern",
+    fr: "Derrière agité",
+    it: "Fondoschiena irrequieto",
+  },
+  rango_5: {
+    es: "Señor del trono",
+    en: "Throne lord",
+    de: "Herr des Throns",
+    fr: "Seigneur du trône",
+    it: "Signore del trono",
+  },
+  rango_6: {
+    es: "Leyenda de iPoo",
+    en: "iPoo legend",
+    de: "iPoo-Legende",
+    fr: "Légende iPoo",
+    it: "Leggenda iPoo",
+  },
+ajustes_titulo: {
+    es: "Ajustes", en: "Settings", de: "Einstellungen", fr: "Paramètres", it: "Impostazioni",
+  },
+  perfil: {
+    es: "Perfil", en: "Profile", de: "Profil", fr: "Profil", it: "Profilo",
+  },
+  cambiar_foto: {
+    es: "Cambiar foto", en: "Change photo", de: "Foto ändern", fr: "Changer la photo", it: "Cambia foto",
+  },
+  nombre_usuario: {
+    es: "Nombre de usuario", en: "Username", de: "Benutzername", fr: "Nom d'utilisateur", it: "Nome utente",
+  },
+  mi_nivel: {
+    es: "Mi nivel", en: "My level", de: "Mein Level", fr: "Mon niveau", it: "Il mio livello",
+  },
+  ver_ranking: {
+    es: "Ver ranking 🏆", en: "View ranking 🏆", de: "Rangliste ansehen 🏆", fr: "Voir le classement 🏆", it: "Vedi classifica 🏆",
+  },
+  puntos_siguiente: {
+    es: "puntos para el siguiente rango", en: "points to the next rank", de: "Punkte bis zum nächsten Rang", fr: "points pour le rang suivant", it: "punti al prossimo livello",
+  },
+  radio_busqueda: {
+    es: "Radio de búsqueda", en: "Search radius", de: "Suchradius", fr: "Rayon de recherche", it: "Raggio di ricerca",
+  },
+  buscar_en_radio: {
+    es: "Buscar baños en un radio de", en: "Search toilets within", de: "Toiletten suchen im Umkreis von", fr: "Chercher des toilettes dans un rayon de", it: "Cerca bagni entro",
+  },
+  guardar_cambios: {
+    es: "Guardar cambios", en: "Save changes", de: "Änderungen speichern", fr: "Enregistrer", it: "Salva modifiche",
+  },
+  cambios_guardados: {
+    es: "Cambios guardados.", en: "Changes saved.", de: "Änderungen gespeichert.", fr: "Modifications enregistrées.", it: "Modifiche salvate.",
+  },
+  no_guardado: {
+    es: "No se pudo guardar: ", en: "Couldn't save: ", de: "Konnte nicht speichern: ", fr: "Impossible d'enregistrer : ", it: "Impossibile salvare: ",
+  },
+  mis_valoraciones: {
+    es: "Mis valoraciones", en: "My reviews", de: "Meine Bewertungen", fr: "Mes avis", it: "Le mie recensioni",
+  },
+  sin_mis_valoraciones: {
+    es: "Aún no has valorado ningún baño.", en: "You haven't reviewed any toilets yet.", de: "Du hast noch keine Toiletten bewertet.", fr: "Vous n'avez encore noté aucunes toilettes.", it: "Non hai ancora recensito nessun bagno.",
+  },
+  info_ayuda: {
+    es: "Información y ayuda", en: "Info and help", de: "Info und Hilfe", fr: "Infos et aide", it: "Informazioni e aiuto",
+  },
+  centro_ayuda: {
+    es: "Centro de ayuda", en: "Help center", de: "Hilfezentrum", fr: "Centre d'aide", it: "Centro assistenza",
+  },
+  politica_privacidad: {
+    es: "Política de privacidad", en: "Privacy policy", de: "Datenschutz", fr: "Politique de confidentialité", it: "Informativa sulla privacy",
+  },
+  aviso_legal: {
+    es: "Aviso legal", en: "Legal notice", de: "Impressum", fr: "Mentions légales", it: "Note legali",
+  },
+  politica_cookies: {
+    es: "Política de cookies", en: "Cookie policy", de: "Cookie-Richtlinie", fr: "Politique de cookies", it: "Informativa sui cookie",
+  },
+  cerrar_sesion: {
+    es: "Cerrar sesión", en: "Log out", de: "Abmelden", fr: "Déconnexion", it: "Esci",
+  },
 };
 
 type Ctx = {
