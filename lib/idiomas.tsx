@@ -774,6 +774,55 @@ ajustes_titulo: {
   cerrar_sesion: {
     es: "Cerrar sesión", en: "Log out", de: "Abmelden", fr: "Déconnexion", it: "Esci",
   },
+login_subtitulo: {
+    es: "Encuentra tu baño, estés donde estés.",
+    en: "Find your toilet, wherever you are.",
+    de: "Finde deine Toilette, wo immer du bist.",
+    fr: "Trouvez vos toilettes, où que vous soyez.",
+    it: "Trova il tuo bagno, ovunque tu sia.",
+  },
+  password: {
+    es: "Contraseña",
+    en: "Password",
+    de: "Passwort",
+    fr: "Mot de passe",
+    it: "Password",
+  },
+  entrar: {
+    es: "Entrar",
+    en: "Log in",
+    de: "Anmelden",
+    fr: "Se connecter",
+    it: "Accedi",
+  },
+  crear_cuenta: {
+    es: "Crear cuenta",
+    en: "Sign up",
+    de: "Konto erstellen",
+    fr: "Créer un compte",
+    it: "Crea account",
+  },
+  entrar_google: {
+    es: "Entrar con Google",
+    en: "Log in with Google",
+    de: "Mit Google anmelden",
+    fr: "Se connecter avec Google",
+    it: "Accedi con Google",
+  },
+  o_separador: {
+    es: "o",
+    en: "or",
+    de: "oder",
+    fr: "ou",
+    it: "o",
+  },
+  revisa_email: {
+    es: "¡Revisa tu email para confirmar la cuenta!",
+    en: "Check your email to confirm your account!",
+    de: "Überprüfe deine E-Mail, um dein Konto zu bestätigen!",
+    fr: "Vérifiez votre e-mail pour confirmer votre compte !",
+    it: "Controlla la tua email per confermare l'account!",
+  },
 };
 
 type Ctx = {

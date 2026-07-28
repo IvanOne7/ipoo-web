@@ -6,10 +6,12 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useIdioma } from "@/lib/idiomas";
 
 export default function LoginPage() {
   const router = useRouter();
   const supabase = createClient();
+  const { t } = useIdioma();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
@@ -20,7 +22,7 @@ export default function LoginPage() {
     setMensaje("");
     const { error } = await supabase.auth.signUp({ email, password });
     if (error) setMensaje("Error: " + error.message);
-    else setMensaje("¡Revisa tu email para confirmar la cuenta!");
+    else setMensaje(t("revisa_email"));
     setCargando(false);
   }
 
@@ -53,7 +55,6 @@ export default function LoginPage() {
       setMensaje("Error: " + error.message);
       setCargando(false);
     }
-    // Si va bien, el navegador redirige solo a Google
   }
 
   return (
@@ -68,7 +69,7 @@ export default function LoginPage() {
           <img src="/logo.png" alt="iPoo" className="h-20 w-auto" />
           <h1 className="mt-2 text-2xl font-extrabold tracking-tight">iPoo</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Encuentra tu baño, estés donde estés.
+            {t("login_subtitulo")}
           </p>
         </div>
 
@@ -84,7 +85,7 @@ export default function LoginPage() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Contraseña</Label>
+            <Label htmlFor="password">{t("password")}</Label>
             <Input
               id="password"
               type="password"
@@ -100,7 +101,7 @@ export default function LoginPage() {
             className="w-full"
             size="lg"
           >
-            Entrar
+            {t("entrar")}
           </Button>
           <Button
             onClick={registrarse}
@@ -108,12 +109,12 @@ export default function LoginPage() {
             variant="outline"
             className="w-full"
           >
-            Crear cuenta
+            {t("crear_cuenta")}
           </Button>
 
           <div className="flex items-center gap-3 py-1">
             <div className="h-px flex-1 bg-border" />
-            <span className="text-xs text-muted-foreground">o</span>
+            <span className="text-xs text-muted-foreground">{t("o_separador")}</span>
             <div className="h-px flex-1 bg-border" />
           </div>
 
@@ -129,7 +130,7 @@ export default function LoginPage() {
               alt=""
               className="mr-2 h-4 w-4"
             />
-            Entrar con Google
+            {t("entrar_google")}
           </Button>
 
           {mensaje && (
