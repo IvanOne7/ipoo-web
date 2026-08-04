@@ -2,12 +2,12 @@ export default function PrivacidadPage() {
   return (
     <>
       <h1>Política de privacidad</h1>
-      <p>Última actualización: julio de 2026</p>
+      <p>Última actualización: agosto de 2026</p>
 
       <h2>Responsable del tratamiento</h2>
       <p>
-        El responsable del tratamiento de tus datos es [TU-NOMBRE-O-EMPRESA], con
-        domicilio en [TU-DIRECCIÓN] y correo de contacto [TU-EMAIL].
+        El responsable del tratamiento de tus datos es el titular de iPoo, con
+        correo de contacto contacto@ipoo.es.
       </p>
 
       <h2>Qué datos recogemos</h2>
@@ -22,7 +22,8 @@ export default function PrivacidadPage() {
         </li>
         <li>
           <strong>Ubicación:</strong> si nos das permiso, usamos tu ubicación
-          para mostrarte baños cercanos. No la guardamos de forma permanente.
+          para mostrarte baños cercanos y detectar tu ciudad. No la guardamos de
+          forma permanente.
         </li>
       </ul>
 
@@ -42,12 +43,12 @@ export default function PrivacidadPage() {
       <h2>Tus derechos</h2>
       <p>
         Puedes acceder, rectificar o eliminar tus datos, y solicitar que dejemos
-        de tratarlos. Para ejercer estos derechos, escríbenos a [TU-EMAIL]. También
-        puedes eliminar tu cuenta desde los ajustes.
+        de tratarlos. Para ejercer estos derechos, escríbenos a contacto@ipoo.es.
+        También puedes eliminar tu cuenta desde los ajustes.
       </p>
 
       <h2>Contacto</h2>
-      <p>Para cualquier duda sobre privacidad: [TU-EMAIL].</p>
+      <p>Para cualquier duda sobre privacidad: contacto@ipoo.es.</p>
     </>
   );
 }

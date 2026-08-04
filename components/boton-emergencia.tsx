@@ -1,5 +1,3 @@
-"use client";
-
 import type { Bano } from "@/components/panel-buscador";
 
 export default function BotonEmergencia({
@@ -24,7 +22,12 @@ export default function BotonEmergencia({
       className="absolute bottom-6 right-6 z-10 flex flex-col items-center justify-center rounded-full bg-red-600 px-5 py-4 text-white shadow-2xl animate-pulse-emergencia"
       title="Baño más cercano ¡ya!"
     >
-      <span className="text-3xl leading-none">💩</span>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/emergencia.png"
+        alt=""
+        className="h-16 w-16 object-contain"
+      />
       <span className="mt-1 text-xs font-bold tracking-wide">EMERGENCIA</span>
     </button>
   );

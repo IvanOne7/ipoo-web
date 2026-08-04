@@ -35,9 +35,9 @@ export default function CookiesPage() {
         configuración de tu navegador.
       </p>
 
-      <h2>Contacto</h2>
+     <h2>Contacto</h2>
       <p>
-        Para cualquier duda sobre esta política, escríbenos a [TU-EMAIL-DE-CONTACTO].
+        Para cualquier duda sobre esta política, escríbenos a contacto@ipoo.es.
       </p>
     </>
   );

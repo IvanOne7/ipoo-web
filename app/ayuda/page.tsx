@@ -30,7 +30,7 @@ const FAQS = [
   },
   {
     p: "¿Cómo elimino mi cuenta o mis datos?",
-    r: "Escríbenos a [TU-EMAIL] y nos encargaremos. Consulta también nuestra política de privacidad.",
+    r: "Escríbenos a contacto@ipoo.es y nos encargaremos. Consulta también nuestra política de privacidad.",
   },
 ];
 
@@ -82,10 +82,10 @@ export default function AyudaPage() {
         </p>
         
          <button
-          onClick={() => (window.location.href = "mailto:[TU-EMAIL]")}
+          onClick={() => (window.location.href = "mailto:contacto@ipoo.es")}
           className="mt-3 inline-block font-semibold text-primary underline"
         >
-          [TU-EMAIL]
+          contacto@ipoo.es
         </button>
       </div>
 
