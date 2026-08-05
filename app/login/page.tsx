@@ -18,10 +18,16 @@ export default function LoginPage() {
   const [cargando, setCargando] = useState(false);
   const [verPassword, setVerPassword] = useState(false);
 
-  async function registrarse() {
+ async function registrarse() {
     setCargando(true);
     setMensaje("");
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/`,
+      },
+    });
     if (error) setMensaje("Error: " + error.message);
     else setMensaje(t("revisa_email"));
     setCargando(false);
