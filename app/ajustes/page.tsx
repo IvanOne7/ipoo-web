@@ -167,7 +167,10 @@ export default function AjustesPage() {
     const archivo = e.target.files?.[0];
     if (!archivo) return;
     const { data: userData } = await supabase.auth.getUser();
-    if (!userData.user) return;
+    if (!userData.user) {
+      setMensaje("No hay sesión iniciada. Vuelve a iniciar sesión.");
+      return;
+    }
 
     setMensaje("Subiendo foto…");
 
@@ -177,14 +180,14 @@ export default function AjustesPage() {
       const dataUrl = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
+        reader.onerror = () => reject(new Error("No se pudo leer el archivo"));
         reader.readAsDataURL(archivo);
       });
 
       const img = await new Promise<HTMLImageElement>((resolve, reject) => {
         const i = new Image();
         i.onload = () => resolve(i);
-        i.onerror = reject;
+        i.onerror = () => reject(new Error("No se pudo cargar la imagen (formato no soportado)"));
         i.src = dataUrl;
       });
 
@@ -203,14 +206,14 @@ export default function AjustesPage() {
       canvas.width = width;
       canvas.height = height;
       const ctx = canvas.getContext("2d");
-      if (!ctx) throw new Error("No se pudo procesar la imagen");
+      if (!ctx) throw new Error("No se pudo procesar la imagen (canvas)");
       ctx.drawImage(img, 0, 0, width, height);
 
       // Convertir a JPG (blob) al 85% de calidad
       const blob = await new Promise<Blob | null>((resolve) =>
         canvas.toBlob((b) => resolve(b), "image/jpeg", 0.85)
       );
-      if (!blob) throw new Error("No se pudo procesar la imagen");
+      if (!blob) throw new Error("No se pudo convertir la imagen (blob nulo)");
 
       const nombreArchivo = `${userData.user.id}/${Date.now()}.jpg`;
       const { error: errSubida } = await supabase.storage
@@ -221,7 +224,7 @@ export default function AjustesPage() {
         });
 
       if (errSubida) {
-        setMensaje("Error: " + errSubida.message);
+        setMensaje("Error subida: " + errSubida.message);
         return;
       }
 
@@ -236,8 +239,8 @@ export default function AjustesPage() {
 
       setAvatarUrl(urlData.publicUrl);
       setMensaje("Foto actualizada.");
-    } catch {
-      setMensaje("No se pudo subir la foto. Inténtalo con otra imagen.");
+    } catch (err) {
+      setMensaje("Fallo: " + (err instanceof Error ? err.message : String(err)));
     }
   }
 
@@ -296,7 +299,6 @@ export default function AjustesPage() {
             )}
           </div>
           <div>
-            <div>
             <input
               id="avatar"
               type="file"
@@ -316,7 +318,6 @@ export default function AjustesPage() {
             >
               {t("cambiar_foto")}
             </label>
-          </div>
           </div>
         </div>
 
