@@ -741,9 +741,6 @@ ajustes_titulo: {
   buscar_en_radio: {
     es: "Buscar baños en un radio de", en: "Search toilets within", de: "Toiletten suchen im Umkreis von", fr: "Chercher des toilettes dans un rayon de", it: "Cerca bagni entro",
   },
-  guardar_cambios: {
-    es: "Guardar cambios", en: "Save changes", de: "Änderungen speichern", fr: "Enregistrer", it: "Salva modifiche",
-  },
   cambios_guardados: {
     es: "Cambios guardados.", en: "Changes saved.", de: "Änderungen gespeichert.", fr: "Modifications enregistrées.", it: "Modifiche salvate.",
   },
