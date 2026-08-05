@@ -171,37 +171,75 @@ export default function AjustesPage() {
 
     setMensaje("Subiendo foto…");
 
-    // Leer el archivo como binario (funciona en movil y PC)
-    const datos = await archivo.arrayBuffer();
-
-    // Extension segura a partir del tipo del archivo
-    const ext = archivo.type.split("/")[1] || "jpg";
-    const nombreArchivo = `${userData.user.id}/${Date.now()}.${ext}`;
-
-    const { error: errSubida } = await supabase.storage
-      .from("avatares")
-      .upload(nombreArchivo, datos, {
-        upsert: true,
-        contentType: archivo.type || "image/jpeg",
+    try {
+      // Leer la imagen y redimensionarla con un canvas (compatible con Safari iOS
+      // y convierte HEIC/pesadas a JPG ligero)
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(archivo);
       });
 
-    if (errSubida) {
-      setMensaje("Error: " + errSubida.message);
-      return;
+      const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const i = new Image();
+        i.onload = () => resolve(i);
+        i.onerror = reject;
+        i.src = dataUrl;
+      });
+
+      // Redimensionar a máx 500px de lado
+      const max = 500;
+      let { width, height } = img;
+      if (width > height && width > max) {
+        height = (height * max) / width;
+        width = max;
+      } else if (height > max) {
+        width = (width * max) / height;
+        height = max;
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("No se pudo procesar la imagen");
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // Convertir a JPG (blob) al 85% de calidad
+      const blob = await new Promise<Blob | null>((resolve) =>
+        canvas.toBlob((b) => resolve(b), "image/jpeg", 0.85)
+      );
+      if (!blob) throw new Error("No se pudo procesar la imagen");
+
+      const nombreArchivo = `${userData.user.id}/${Date.now()}.jpg`;
+      const { error: errSubida } = await supabase.storage
+        .from("avatares")
+        .upload(nombreArchivo, blob, {
+          upsert: true,
+          contentType: "image/jpeg",
+        });
+
+      if (errSubida) {
+        setMensaje("Error: " + errSubida.message);
+        return;
+      }
+
+      const { data: urlData } = supabase.storage
+        .from("avatares")
+        .getPublicUrl(nombreArchivo);
+
+      await supabase
+        .from("profiles")
+        .update({ avatar_url: urlData.publicUrl })
+        .eq("id", userData.user.id);
+
+      setAvatarUrl(urlData.publicUrl);
+      setMensaje("Foto actualizada.");
+    } catch {
+      setMensaje("No se pudo subir la foto. Inténtalo con otra imagen.");
     }
-
-    const { data: urlData } = supabase.storage
-      .from("avatares")
-      .getPublicUrl(nombreArchivo);
-
-    await supabase
-      .from("profiles")
-      .update({ avatar_url: urlData.publicUrl })
-      .eq("id", userData.user.id);
-
-    setAvatarUrl(urlData.publicUrl);
-    setMensaje("Foto actualizada.");
-  }}
+  }
 
   async function cerrarSesion() {
     await supabase.auth.signOut();
