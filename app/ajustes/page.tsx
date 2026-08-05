@@ -169,10 +169,21 @@ export default function AjustesPage() {
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user) return;
 
-    const nombreArchivo = `${userData.user.id}/${Date.now()}-${archivo.name}`;
+    setMensaje("Subiendo foto…");
+
+    // Leer el archivo como binario (funciona en movil y PC)
+    const datos = await archivo.arrayBuffer();
+
+    // Extension segura a partir del tipo del archivo
+    const ext = archivo.type.split("/")[1] || "jpg";
+    const nombreArchivo = `${userData.user.id}/${Date.now()}.${ext}`;
+
     const { error: errSubida } = await supabase.storage
       .from("avatares")
-      .upload(nombreArchivo, archivo, { upsert: true });
+      .upload(nombreArchivo, datos, {
+        upsert: true,
+        contentType: archivo.type || "image/jpeg",
+      });
 
     if (errSubida) {
       setMensaje("Error: " + errSubida.message);
@@ -189,7 +200,8 @@ export default function AjustesPage() {
       .eq("id", userData.user.id);
 
     setAvatarUrl(urlData.publicUrl);
-  }
+    setMensaje("Foto actualizada.");
+  }}
 
   async function cerrarSesion() {
     await supabase.auth.signOut();
@@ -246,16 +258,27 @@ export default function AjustesPage() {
             )}
           </div>
           <div>
-            <Label htmlFor="avatar" className="cursor-pointer text-sm text-primary underline">
-              {t("cambiar_foto")}
-            </Label>
+            <div>
             <input
               id="avatar"
               type="file"
               accept="image/*"
               onChange={subirAvatar}
-              className="hidden"
+              style={{
+                position: "absolute",
+                width: 1,
+                height: 1,
+                opacity: 0,
+                overflow: "hidden",
+              }}
             />
+            <label
+              htmlFor="avatar"
+              className="cursor-pointer text-sm text-primary underline"
+            >
+              {t("cambiar_foto")}
+            </label>
+          </div>
           </div>
         </div>
 
