@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useIdioma } from "@/lib/idiomas";
 
 type MiBano = {
   id: string;
@@ -27,6 +28,7 @@ type Valoracion = {
 export default function MiNegocioPage() {
   const router = useRouter();
   const supabase = createClient();
+  const { t } = useIdioma();
 
   const [cargando, setCargando] = useState(true);
   const [banos, setBanos] = useState<MiBano[]>([]);
@@ -91,7 +93,7 @@ export default function MiNegocioPage() {
         horario: banoActivo.horario || null,
       })
       .eq("id", banoActivo.id);
-    setAviso(error ? "Error al guardar." : "Información guardada.");
+    setAviso(error ? t("mn_error_guardar") : t("mn_info_guardada"));
   }
 
   async function alternarCerrado() {
@@ -129,7 +131,7 @@ export default function MiNegocioPage() {
   if (cargando) {
     return (
       <main className="flex min-h-screen items-center justify-center">
-        <p className="text-sm text-muted-foreground">Cargando…</p>
+        <p className="text-sm text-muted-foreground">{t("cargando")}</p>
       </main>
     );
   }
@@ -138,13 +140,11 @@ export default function MiNegocioPage() {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center gap-4 px-4 text-center">
         <span className="text-4xl">🏪</span>
-        <p className="text-lg font-semibold">Aún no gestionas ningún baño</p>
+        <p className="text-lg font-semibold">{t("mn_sin_banos_titulo")}</p>
         <p className="max-w-sm text-sm text-muted-foreground">
-          Si eres el dueño de un local, ve a su baño en el mapa y pulsa
-          &quot;Soy el propietario&quot;. Cuando verifiquemos tu solicitud,
-          aparecerá aquí.
+          {t("mn_sin_banos_texto")}
         </p>
-        <Button onClick={() => router.push("/")}>Volver al mapa</Button>
+        <Button onClick={() => router.push("/")}>{t("volver_mapa")}</Button>
       </main>
     );
   }
@@ -152,9 +152,9 @@ export default function MiNegocioPage() {
   return (
     <main className="mx-auto max-w-2xl px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Mi negocio 🏪</h1>
+        <h1 className="text-2xl font-bold">{t("mn_titulo")}</h1>
         <Button variant="outline" size="sm" onClick={() => router.push("/")}>
-          Volver al mapa
+          {t("volver_mapa")}
         </Button>
       </div>
 
@@ -181,22 +181,24 @@ export default function MiNegocioPage() {
           <section className="mb-6 grid grid-cols-2 gap-3">
             <div className="rounded-2xl border bg-card p-4 text-center shadow-sm">
               <p className="text-3xl font-extrabold text-primary">{visitas}</p>
-              <p className="text-xs text-muted-foreground">Visitas</p>
+              <p className="text-xs text-muted-foreground">{t("mn_visitas")}</p>
             </div>
             <div className="rounded-2xl border bg-card p-4 text-center shadow-sm">
               <p className="text-3xl font-extrabold text-primary">
                 {valoraciones.length}
               </p>
-              <p className="text-xs text-muted-foreground">Valoraciones</p>
+              <p className="text-xs text-muted-foreground">
+                {t("mn_valoraciones")}
+              </p>
             </div>
           </section>
 
           {/* Cerrado temporal */}
           <section className="mb-6 flex items-center justify-between rounded-2xl border bg-card p-4 shadow-sm">
             <div>
-              <p className="font-semibold">Cerrado temporalmente</p>
+              <p className="font-semibold">{t("mn_cerrado")}</p>
               <p className="text-xs text-muted-foreground">
-                Los usuarios verán un aviso en tu baño.
+                {t("mn_cerrado_ayuda")}
               </p>
             </div>
             <button
@@ -215,9 +217,9 @@ export default function MiNegocioPage() {
 
           {/* Editar info */}
           <section className="mb-6 space-y-4 rounded-2xl border bg-card p-6 shadow-sm">
-            <h2 className="text-lg font-semibold">Información del local</h2>
+            <h2 className="text-lg font-semibold">{t("mn_info_local")}</h2>
             <div className="space-y-2">
-              <Label>Dirección</Label>
+              <Label>{t("mn_direccion")}</Label>
               <Input
                 value={banoActivo.direccion ?? ""}
                 onChange={(e) =>
@@ -226,7 +228,7 @@ export default function MiNegocioPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Horario</Label>
+              <Label>{t("mn_horario")}</Label>
               <Input
                 value={banoActivo.horario ?? ""}
                 onChange={(e) =>
@@ -236,7 +238,7 @@ export default function MiNegocioPage() {
               />
             </div>
             <div className="flex items-center gap-3">
-              <Button onClick={guardarInfo}>Guardar</Button>
+              <Button onClick={guardarInfo}>{t("mn_guardar")}</Button>
               {aviso && (
                 <span className="text-sm text-muted-foreground">{aviso}</span>
               )}
@@ -245,10 +247,10 @@ export default function MiNegocioPage() {
 
           {/* Responder reseñas */}
           <section className="rounded-2xl border bg-card p-6 shadow-sm">
-            <h2 className="mb-4 text-lg font-semibold">Reseñas</h2>
+            <h2 className="mb-4 text-lg font-semibold">{t("mn_resenas")}</h2>
             {valoraciones.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                Aún no tienes reseñas.
+                {t("mn_sin_resenas")}
               </p>
             ) : (
               <div className="space-y-4">
@@ -260,14 +262,14 @@ export default function MiNegocioPage() {
                     {v.respuesta_dueno ? (
                       <div className="mt-2 rounded-lg bg-primary/5 p-2">
                         <p className="text-xs font-semibold text-primary">
-                          Tu respuesta:
+                          {t("mn_tu_respuesta")}
                         </p>
                         <p className="text-sm">{v.respuesta_dueno}</p>
                       </div>
                     ) : (
                       <div className="mt-2 space-y-2">
                         <Textarea
-                          placeholder="Responder a esta reseña…"
+                          placeholder={t("mn_responder_placeholder")}
                           value={respuestas[v.id] ?? ""}
                           onChange={(e) =>
                             setRespuestas((prev) => ({
@@ -278,7 +280,7 @@ export default function MiNegocioPage() {
                           className="rounded-xl text-sm"
                         />
                         <Button size="sm" onClick={() => responder(v.id)}>
-                          Responder
+                          {t("mn_responder")}
                         </Button>
                       </div>
                     )}

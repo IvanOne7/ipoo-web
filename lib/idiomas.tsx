@@ -977,6 +977,130 @@ compartir_rango: {
     fr: "Copié ! Colle-le où tu veux.",
     it: "Copiato! Incollalo dove vuoi.",
   },
+mn_titulo: {
+    es: "Mi negocio 🏪", en: "My business 🏪", de: "Mein Geschäft 🏪", fr: "Mon commerce 🏪", it: "La mia attività 🏪",
+  },
+  mn_sin_banos_titulo: {
+    es: "Aún no gestionas ningún baño", en: "You don't manage any toilets yet", de: "Du verwaltest noch keine Toiletten", fr: "Vous ne gérez encore aucunes toilettes", it: "Non gestisci ancora nessun bagno",
+  },
+  mn_sin_banos_texto: {
+    es: "Si eres el dueño de un local, ve a su baño en el mapa y pulsa \"Soy el propietario\". Cuando verifiquemos tu solicitud, aparecerá aquí.",
+    en: "If you own a venue, go to its toilet on the map and tap \"I'm the owner\". Once we verify your request, it'll appear here.",
+    de: "Wenn dir ein Lokal gehört, gehe zu seiner Toilette auf der Karte und tippe auf \"Ich bin der Inhaber\". Nach der Prüfung erscheint es hier.",
+    fr: "Si vous possédez un établissement, allez à ses toilettes sur la carte et appuyez sur \"Je suis le propriétaire\". Après vérification, il apparaîtra ici.",
+    it: "Se possiedi un locale, vai al suo bagno sulla mappa e tocca \"Sono il proprietario\". Dopo la verifica, apparirà qui.",
+  },
+  mn_visitas: {
+    es: "Visitas", en: "Visits", de: "Besuche", fr: "Visites", it: "Visite",
+  },
+  mn_valoraciones: {
+    es: "Valoraciones", en: "Reviews", de: "Bewertungen", fr: "Avis", it: "Recensioni",
+  },
+  mn_cerrado: {
+    es: "Cerrado temporalmente", en: "Temporarily closed", de: "Vorübergehend geschlossen", fr: "Temporairement fermé", it: "Chiuso temporaneamente",
+  },
+  mn_cerrado_ayuda: {
+    es: "Los usuarios verán un aviso en tu baño.", en: "Users will see a notice on your toilet.", de: "Nutzer sehen einen Hinweis an deiner Toilette.", fr: "Les utilisateurs verront un avis sur vos toilettes.", it: "Gli utenti vedranno un avviso sul tuo bagno.",
+  },
+  mn_info_local: {
+    es: "Información del local", en: "Venue information", de: "Informationen zum Lokal", fr: "Informations sur l'établissement", it: "Informazioni sul locale",
+  },
+  mn_direccion: {
+    es: "Dirección", en: "Address", de: "Adresse", fr: "Adresse", it: "Indirizzo",
+  },
+  mn_horario: {
+    es: "Horario", en: "Hours", de: "Öffnungszeiten", fr: "Horaires", it: "Orario",
+  },
+  mn_guardar: {
+    es: "Guardar", en: "Save", de: "Speichern", fr: "Enregistrer", it: "Salva",
+  },
+  mn_info_guardada: {
+    es: "Información guardada.", en: "Information saved.", de: "Informationen gespeichert.", fr: "Informations enregistrées.", it: "Informazioni salvate.",
+  },
+  mn_error_guardar: {
+    es: "Error al guardar.", en: "Error saving.", de: "Fehler beim Speichern.", fr: "Erreur d'enregistrement.", it: "Errore nel salvataggio.",
+  },
+  mn_resenas: {
+    es: "Reseñas", en: "Reviews", de: "Bewertungen", fr: "Avis", it: "Recensioni",
+  },
+  mn_sin_resenas: {
+    es: "Aún no tienes reseñas.", en: "You don't have any reviews yet.", de: "Du hast noch keine Bewertungen.", fr: "Vous n'avez pas encore d'avis.", it: "Non hai ancora recensioni.",
+  },
+  mn_tu_respuesta: {
+    es: "Tu respuesta:", en: "Your reply:", de: "Deine Antwort:", fr: "Votre réponse :", it: "La tua risposta:",
+  },
+  mn_responder_placeholder: {
+    es: "Responder a esta reseña…", en: "Reply to this review…", de: "Auf diese Bewertung antworten…", fr: "Répondre à cet avis…", it: "Rispondi a questa recensione…",
+  },
+  mn_responder: {
+    es: "Responder", en: "Reply", de: "Antworten", fr: "Répondre", it: "Rispondi",
+  },
+adm_titulo: {
+    es: "Panel de admin 🛠️", en: "Admin panel 🛠️", de: "Admin-Panel 🛠️", fr: "Panneau admin 🛠️", it: "Pannello admin 🛠️",
+  },
+  adm_comprobando: {
+    es: "Comprobando permisos…", en: "Checking permissions…", de: "Berechtigungen werden geprüft…", fr: "Vérification des permissions…", it: "Verifica dei permessi…",
+  },
+  adm_sin_acceso: {
+    es: "No tienes acceso a esta página.", en: "You don't have access to this page.", de: "Du hast keinen Zugriff auf diese Seite.", fr: "Vous n'avez pas accès à cette page.", it: "Non hai accesso a questa pagina.",
+  },
+  adm_reclamaciones: {
+    es: "Reclamaciones pendientes", en: "Pending claims", de: "Ausstehende Anträge", fr: "Demandes en attente", it: "Richieste in sospeso",
+  },
+  adm_sin_reclamaciones: {
+    es: "No hay solicitudes pendientes.", en: "No pending requests.", de: "Keine ausstehenden Anfragen.", fr: "Aucune demande en attente.", it: "Nessuna richiesta in sospeso.",
+  },
+  adm_bano: {
+    es: "Baño", en: "Toilet", de: "Toilette", fr: "Toilettes", it: "Bagno",
+  },
+  adm_aprobar: {
+    es: "✓ Aprobar", en: "✓ Approve", de: "✓ Genehmigen", fr: "✓ Approuver", it: "✓ Approva",
+  },
+  adm_rechazar: {
+    es: "Rechazar", en: "Reject", de: "Ablehnen", fr: "Rejeter", it: "Rifiuta",
+  },
+  adm_verificado: {
+    es: "verificado.", en: "verified.", de: "verifiziert.", fr: "vérifié.", it: "verificato.",
+  },
+  adm_rechazada: {
+    es: "Solicitud rechazada.", en: "Request rejected.", de: "Anfrage abgelehnt.", fr: "Demande rejetée.", it: "Richiesta rifiutata.",
+  },
+  adm_reportado: {
+    es: "Contenido reportado", en: "Reported content", de: "Gemeldete Inhalte", fr: "Contenu signalé", it: "Contenuto segnalato",
+  },
+  adm_sin_reportado: {
+    es: "No hay contenido reportado.", en: "No reported content.", de: "Keine gemeldeten Inhalte.", fr: "Aucun contenu signalé.", it: "Nessun contenuto segnalato.",
+  },
+  adm_borrar_resena: {
+    es: "Borrar reseña", en: "Delete review", de: "Bewertung löschen", fr: "Supprimer l'avis", it: "Elimina recensione",
+  },
+  adm_restaurar: {
+    es: "Restaurar", en: "Restore", de: "Wiederherstellen", fr: "Restaurer", it: "Ripristina",
+  },
+  adm_confirmar_borrar_resena: {
+    es: "¿Borrar esta reseña definitivamente?", en: "Delete this review permanently?", de: "Diese Bewertung endgültig löschen?", fr: "Supprimer cet avis définitivement ?", it: "Eliminare questa recensione definitivamente?",
+  },
+  adm_resena_borrada: {
+    es: "Reseña borrada.", en: "Review deleted.", de: "Bewertung gelöscht.", fr: "Avis supprimé.", it: "Recensione eliminata.",
+  },
+  adm_resena_restaurada: {
+    es: "Reseña restaurada.", en: "Review restored.", de: "Bewertung wiederhergestellt.", fr: "Avis restauré.", it: "Recensione ripristinata.",
+  },
+  adm_banos_recientes: {
+    es: "Baños recientes", en: "Recent toilets", de: "Neueste Toiletten", fr: "Toilettes récentes", it: "Bagni recenti",
+  },
+  adm_banos_ayuda: {
+    es: "Borra aquí los baños falsos o abusivos.", en: "Delete fake or abusive toilets here.", de: "Lösche hier gefälschte oder missbräuchliche Toiletten.", fr: "Supprimez ici les toilettes fausses ou abusives.", it: "Elimina qui i bagni falsi o abusivi.",
+  },
+  adm_borrar: {
+    es: "Borrar", en: "Delete", de: "Löschen", fr: "Supprimer", it: "Elimina",
+  },
+  adm_confirmar_borrar_bano: {
+    es: "¿Borrar el baño? Esto no se puede deshacer:", en: "Delete the toilet? This can't be undone:", de: "Toilette löschen? Kann nicht rückgängig gemacht werden:", fr: "Supprimer les toilettes ? Irréversible :", it: "Eliminare il bagno? Non può essere annullato:",
+  },
+  adm_bano_borrado: {
+    es: "Baño borrado:", en: "Toilet deleted:", de: "Toilette gelöscht:", fr: "Toilettes supprimées :", it: "Bagno eliminato:",
+  },
 };
 
 type Ctx = {

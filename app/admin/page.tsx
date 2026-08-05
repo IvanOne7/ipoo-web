@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
+import { useIdioma } from "@/lib/idiomas";
 
 type Reclamacion = {
   id: string;
@@ -37,6 +38,7 @@ type Reporte = {
 export default function AdminPage() {
   const router = useRouter();
   const supabase = createClient();
+  const { t } = useIdioma();
 
   const [esAdmin, setEsAdmin] = useState<boolean | null>(null);
   const [reclamaciones, setReclamaciones] = useState<Reclamacion[]>([]);
@@ -103,7 +105,7 @@ export default function AdminPage() {
       .from("reclamaciones")
       .update({ estado: "aprobada" })
       .eq("id", r.id);
-    setAviso(`"${r.nombre_negocio}" verificado.`);
+    setAviso(`"${r.nombre_negocio}" ${t("adm_verificado")}`);
     cargarDatos();
   }
 
@@ -112,22 +114,22 @@ export default function AdminPage() {
       .from("reclamaciones")
       .update({ estado: "rechazada" })
       .eq("id", r.id);
-    setAviso("Solicitud rechazada.");
+    setAviso(t("adm_rechazada"));
     cargarDatos();
   }
 
   async function borrarBano(id: string, nombre: string) {
-    if (!confirm(`¿Borrar el baño "${nombre}"? Esto no se puede deshacer.`)) return;
+    if (!confirm(`${t("adm_confirmar_borrar_bano")} "${nombre}"`)) return;
     await supabase.from("banos").delete().eq("id", id);
-    setAviso(`Baño "${nombre}" borrado.`);
+    setAviso(`${t("adm_bano_borrado")} "${nombre}"`);
     cargarDatos();
   }
 
   async function borrarResena(reporte: Reporte) {
-    if (!confirm("¿Borrar esta reseña definitivamente?")) return;
+    if (!confirm(t("adm_confirmar_borrar_resena"))) return;
     await supabase.from("valoraciones").delete().eq("id", reporte.valoracion_id);
     await supabase.from("reportes").update({ estado: "revisado" }).eq("id", reporte.id);
-    setAviso("Reseña borrada.");
+    setAviso(t("adm_resena_borrada"));
     cargarDatos();
   }
 
@@ -137,14 +139,14 @@ export default function AdminPage() {
       .update({ oculta: false })
       .eq("id", reporte.valoracion_id);
     await supabase.from("reportes").update({ estado: "revisado" }).eq("id", reporte.id);
-    setAviso("Reseña restaurada.");
+    setAviso(t("adm_resena_restaurada"));
     cargarDatos();
   }
 
   if (esAdmin === null) {
     return (
       <main className="flex min-h-screen items-center justify-center">
-        <p className="text-sm text-muted-foreground">Comprobando permisos…</p>
+        <p className="text-sm text-muted-foreground">{t("adm_comprobando")}</p>
       </main>
     );
   }
@@ -152,8 +154,8 @@ export default function AdminPage() {
   if (esAdmin === false) {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center gap-4">
-        <p className="text-lg font-semibold">No tienes acceso a esta página.</p>
-        <Button onClick={() => router.push("/")}>Volver al mapa</Button>
+        <p className="text-lg font-semibold">{t("adm_sin_acceso")}</p>
+        <Button onClick={() => router.push("/")}>{t("volver_mapa")}</Button>
       </main>
     );
   }
@@ -161,9 +163,9 @@ export default function AdminPage() {
   return (
     <main className="mx-auto max-w-2xl px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Panel de admin 🛠️</h1>
+        <h1 className="text-2xl font-bold">{t("adm_titulo")}</h1>
         <Button variant="outline" size="sm" onClick={() => router.push("/")}>
-          Volver al mapa
+          {t("volver_mapa")}
         </Button>
       </div>
 
@@ -176,30 +178,30 @@ export default function AdminPage() {
       {/* Reclamaciones pendientes */}
       <section className="mb-8 rounded-2xl border bg-card p-6 shadow-sm">
         <h2 className="mb-4 text-lg font-semibold">
-          Reclamaciones pendientes ({reclamaciones.length})
+          {t("adm_reclamaciones")} ({reclamaciones.length})
         </h2>
         {reclamaciones.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No hay solicitudes pendientes.</p>
+          <p className="text-sm text-muted-foreground">{t("adm_sin_reclamaciones")}</p>
         ) : (
           <div className="space-y-3">
             {reclamaciones.map((r) => (
               <div key={r.id} className="rounded-xl border p-3 text-sm">
                 <p className="font-semibold">{r.nombre_negocio}</p>
                 <p className="text-muted-foreground">
-                  Baño: {r.banos?.nombre ?? r.bano_id}
+                  {t("adm_bano")}: {r.banos?.nombre ?? r.bano_id}
                 </p>
                 <p className="text-muted-foreground">📧 {r.email_contacto}</p>
                 {r.mensaje && <p className="mt-1">{r.mensaje}</p>}
                 <div className="mt-3 flex gap-2">
                   <Button size="sm" onClick={() => aprobar(r)}>
-                    ✓ Aprobar
+                    {t("adm_aprobar")}
                   </Button>
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => rechazar(r)}
                   >
-                    Rechazar
+                    {t("adm_rechazar")}
                   </Button>
                 </div>
               </div>
@@ -211,11 +213,11 @@ export default function AdminPage() {
       {/* Contenido reportado */}
       <section className="mb-8 rounded-2xl border bg-card p-6 shadow-sm">
         <h2 className="mb-4 text-lg font-semibold">
-          Contenido reportado ({reportes.length})
+          {t("adm_reportado")} ({reportes.length})
         </h2>
         {reportes.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            No hay contenido reportado.
+            {t("adm_sin_reportado")}
           </p>
         ) : (
           <div className="space-y-3">
@@ -239,10 +241,10 @@ export default function AdminPage() {
                 )}
                 <div className="mt-2 flex gap-2">
                   <Button size="sm" variant="destructive" onClick={() => borrarResena(r)}>
-                    Borrar reseña
+                    {t("adm_borrar_resena")}
                   </Button>
                   <Button size="sm" variant="outline" onClick={() => restaurarResena(r)}>
-                    Restaurar
+                    {t("adm_restaurar")}
                   </Button>
                 </div>
               </div>
@@ -253,9 +255,9 @@ export default function AdminPage() {
 
       {/* Baños (para borrar abusivos) */}
       <section className="rounded-2xl border bg-card p-6 shadow-sm">
-        <h2 className="mb-4 text-lg font-semibold">Baños recientes</h2>
+        <h2 className="mb-4 text-lg font-semibold">{t("adm_banos_recientes")}</h2>
         <p className="mb-3 text-xs text-muted-foreground">
-          Borra aquí los baños falsos o abusivos.
+          {t("adm_banos_ayuda")}
         </p>
         <div className="space-y-2">
           {banos.map((b) => (
@@ -269,7 +271,7 @@ export default function AdminPage() {
                 variant="destructive"
                 onClick={() => borrarBano(b.id, b.nombre)}
               >
-                Borrar
+                {t("adm_borrar")}
               </Button>
             </div>
           ))}
