@@ -160,7 +160,7 @@ export default function Mapa() {
   const [banoEditar, setBanoEditar] = useState<Bano | null>(null);
   const [haySesion, setHaySesion] = useState<boolean | null>(null);
   const { t } = useIdioma();
-  const [ultimoToque, setUltimoToque] = useState<number>(0);
+  const [pinProvisional, setPinProvisional] = useState<{ lat: number; lng: number } | null>(null);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -189,6 +189,17 @@ export default function Mapa() {
     return () => sub.subscription.unsubscribe();
   }, []);
 
+  // Un toque en el mapa coloca un pin provisional
+  useEffect(() => {
+    if (!mapaRef) return;
+    const listener = mapaRef.addListener("click", (e: google.maps.MapMouseEvent) => {
+      if (modoAnadir) return;
+      if (!e.latLng) return;
+      setPinProvisional({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+    });
+    return () => google.maps.event.removeListener(listener);
+  }, [mapaRef, modoAnadir]);
+
   const handleSeleccionBano = useCallback((b: Bano) => {
     setBanoSeleccionado(b);
   }, []);
@@ -207,31 +218,6 @@ export default function Mapa() {
     },
     [mapaRef]
   );
-
-  function confirmarUbicacion() {
-    if (!mapaRef) return;
-    const c = mapaRef.getCenter();
-    if (!c) return;
-    setNuevoPunto({ lat: c.lat(), lng: c.lng() });
-    setModoAnadir(false);
-  }
-
-  function manejarClicMapa(e: { detail: { latLng: { lat: number; lng: number } | null } }) {
-    if (modoAnadir) return;
-    const coords = e.detail?.latLng;
-    if (!coords) return;
-    const ahora = Date.now();
-    if (ahora - ultimoToque < 500) {
-      if (haySesion) {
-        setNuevoPunto({ lat: coords.lat, lng: coords.lng });
-      } else {
-        window.location.href = "/login";
-      }
-      setUltimoToque(0);
-    } else {
-      setUltimoToque(ahora);
-    }
-  }
 
   function centrarEnMi() {
     if (!navigator.geolocation) return;
@@ -257,72 +243,50 @@ export default function Mapa() {
     <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
       <div className="relative h-screen w-full">
         <BarraNavegacion />
-        {!modoAnadir && (
-          <>
-            <PanelBuscador
-              banos={listaBanos}
-              onSeleccion={handleSeleccionDesdeBuscador}
-            />
-            <BotonEmergencia
-              banos={listaBanos}
-              onEmergencia={handleSeleccionDesdeBuscador}
-            />
-            <button
-              onClick={centrarEnMi}
-              title="Centrarme en mi ubicación"
-              className="absolute bottom-28 right-6 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-card text-xl shadow-lg ring-1 ring-black/5 transition hover:shadow-xl"
-            >
-              🎯
-            </button>
-            <Button
-              onClick={() => {
-                if (haySesion) {
-                  setModoAnadir(true);
-                } else {
-                  window.location.href = "/login";
-                }
-              }}
-              className="absolute bottom-6 left-6 z-10 rounded-full shadow-lg"
-              size="lg"
-            >
-              {t("anadir_bano")}
-            </Button>
-          </>
-        )}
 
-        {modoAnadir && (
-          <>
-            <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
-              <div className="flex flex-col items-center">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/logo.png" alt="" className="h-12 w-12 drop-shadow-lg" />
-                <div className="h-4 w-1 bg-black/40" />
-                <div className="h-2 w-2 rounded-full bg-black/40" />
-              </div>
-            </div>
-            <div className="absolute inset-x-0 top-20 z-30 flex justify-center px-4">
-              <p className="rounded-full bg-card px-4 py-2 text-sm font-semibold shadow-lg">
-                {t("mueve_mapa")}
-              </p>
-            </div>
-            <div className="absolute inset-x-0 bottom-6 z-30 flex justify-center gap-3 px-4">
+        <PanelBuscador
+          banos={listaBanos}
+          onSeleccion={handleSeleccionDesdeBuscador}
+        />
+        <BotonEmergencia
+          banos={listaBanos}
+          onEmergencia={handleSeleccionDesdeBuscador}
+        />
+        <button
+          onClick={centrarEnMi}
+          title="Centrarme en mi ubicación"
+          className="absolute bottom-28 right-6 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-card text-xl shadow-lg ring-1 ring-black/5 transition hover:shadow-xl"
+        >
+          🎯
+        </button>
+
+        {/* Botón para crear baño en el pin provisional */}
+        {pinProvisional && (
+          <div className="absolute inset-x-0 bottom-6 z-30 flex justify-center px-4">
+            <div className="flex items-center gap-2 rounded-full bg-card px-4 py-2 shadow-lg">
+              <span className="text-sm font-semibold">¿Crear un baño aquí?</span>
               <Button
+                size="sm"
                 variant="outline"
-                onClick={() => setModoAnadir(false)}
-                className="rounded-full shadow-lg"
-                size="lg"
+                onClick={() => setPinProvisional(null)}
               >
-                {t("cancelar")}
+                No
               </Button>
               <Button
-                onClick={confirmarUbicacion}
-                className="rounded-full shadow-lg"
-                size="lg"
+                size="sm"
+                onClick={() => {
+                  if (haySesion) {
+                    setNuevoPunto(pinProvisional);
+                    setPinProvisional(null);
+                  } else {
+                    window.location.href = "/login";
+                  }
+                }}
               >
-                {t("confirmar_aqui")}
+                Sí, crear
               </Button>
             </div>
-          </>
+          </div>
         )}
 
         <Map
@@ -331,8 +295,6 @@ export default function Mapa() {
           gestureHandling="greedy"
           mapId={process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID!}
           onIdle={(e) => setMapaRef(e.map)}
-          onClick={manejarClicMapa}
-          disableDoubleClickZoom={true}
           disableDefaultUI={true}
           zoomControl={true}
           clickableIcons={false}
@@ -343,6 +305,12 @@ export default function Mapa() {
             onBanosCargados={handleBanosCargados}
             miPos={miPos}
           />
+
+          {pinProvisional && (
+            <AdvancedMarker position={pinProvisional}>
+              <div className="h-8 w-8 animate-bounce rounded-full border-4 border-white bg-red-500 shadow-lg" />
+            </AdvancedMarker>
+          )}
         </Map>
       </div>
 
