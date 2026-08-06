@@ -162,8 +162,6 @@ export default function Mapa() {
   const { t } = useIdioma();
   const [pinProvisional, setPinProvisional] = useState<{ lat: number; lng: number } | null>(null);
 
-  // Cargar el mapa centrado por defecto (sin pedir ubicación automáticamente,
-  // para no disparar el bloqueo de permiso de Android al arrancar)
   useEffect(() => {
     setCargado(true);
   }, []);
@@ -179,7 +177,6 @@ export default function Mapa() {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  // Un toque en el mapa coloca un pin provisional (solo si no está el modo pin-central)
   useEffect(() => {
     if (!mapaRef) return;
     const listener = mapaRef.addListener("click", (e: google.maps.MapMouseEvent) => {
@@ -229,7 +226,7 @@ export default function Mapa() {
         }
       },
       () => {
-        // Si deniega el permiso, no hacemos nada (se queda donde está)
+        // Si deniega el permiso, no hacemos nada
       }
     );
   }
@@ -261,7 +258,7 @@ export default function Mapa() {
               onClick={centrarEnMi}
               title="Centrarme en mi ubicación"
               className="absolute right-6 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-card text-xl shadow-lg ring-1 ring-black/5 transition hover:shadow-xl"
-              style={{ bottom: "calc(7rem + env(safe-area-inset-bottom))" }}
+              style={{ bottom: "calc(7rem + env(safe-area-inset-bottom, 1rem))" }}
             >
               🎯
             </button>
@@ -276,7 +273,7 @@ export default function Mapa() {
               }}
               className="absolute left-6 z-10 rounded-full shadow-lg"
               size="lg"
-              style={{ bottom: "calc(1.5rem + env(safe-area-inset-bottom))" }}
+              style={{ bottom: "calc(2rem + env(safe-area-inset-bottom, 1rem))" }}
             >
               {t("anadir_bano")}
             </Button>
@@ -300,7 +297,7 @@ export default function Mapa() {
             </div>
             <div
               className="absolute inset-x-0 z-30 flex justify-center gap-3 px-4"
-              style={{ bottom: "calc(1.5rem + env(safe-area-inset-bottom))" }}
+              style={{ bottom: "calc(2rem + env(safe-area-inset-bottom, 1rem))" }}
             >
               <Button
                 variant="outline"
@@ -321,11 +318,10 @@ export default function Mapa() {
           </>
         )}
 
-        {/* Botón para crear baño en el pin provisional (toque en el mapa) */}
         {pinProvisional && !modoAnadir && (
           <div
             className="absolute inset-x-0 z-30 flex justify-center px-4"
-            style={{ bottom: "calc(6rem + env(safe-area-inset-bottom))" }}
+            style={{ bottom: "calc(6.5rem + env(safe-area-inset-bottom, 1rem))" }}
           >
             <div className="flex items-center gap-2 rounded-full bg-card px-4 py-2 shadow-lg">
               <span className="text-sm font-semibold">¿Crear un baño aquí?</span>

@@ -19,7 +19,8 @@ export default function BotonEmergencia({
   return (
     <button
       onClick={activar}
-      className="absolute bottom-6 right-6 z-10 flex flex-col items-center justify-center rounded-full bg-red-600 px-5 py-4 text-white shadow-2xl animate-pulse-emergencia"
+      className="absolute right-6 z-10 flex flex-col items-center justify-center rounded-full bg-red-600 px-5 py-4 text-white shadow-2xl animate-pulse-emergencia"
+      style={{ bottom: "calc(2rem + env(safe-area-inset-bottom, 1rem))" }}
       title="Baño más cercano ¡ya!"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
