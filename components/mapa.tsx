@@ -25,7 +25,6 @@ type Grupo = {
   banos: Bano[];
 };
 
-// Agrupa baños cercanos según el nivel de zoom
 function agruparBanos(banos: Bano[], map: google.maps.Map): Grupo[] {
   const zoom = map.getZoom() ?? 15;
   const factor = 60 / Math.pow(2, zoom);
@@ -101,7 +100,6 @@ function CapaBanos({
 
   return (
     <>
-      {/* Punto azul de mi ubicación */}
       {miPos && (
         <AdvancedMarker position={miPos} title="Estás aquí">
           <div className="relative flex items-center justify-center">
@@ -220,10 +218,10 @@ export default function Mapa() {
 
   function manejarClicMapa(e: { detail: { latLng: { lat: number; lng: number } | null } }) {
     if (modoAnadir) return;
-    const coords = e.detail.latLng;
+    const coords = e.detail?.latLng;
     if (!coords) return;
     const ahora = Date.now();
-    if (ahora - ultimoToque < 350) {
+    if (ahora - ultimoToque < 500) {
       if (haySesion) {
         setNuevoPunto({ lat: coords.lat, lng: coords.lng });
       } else {
