@@ -162,20 +162,10 @@ export default function Mapa() {
   const { t } = useIdioma();
   const [pinProvisional, setPinProvisional] = useState<{ lat: number; lng: number } | null>(null);
 
+  // Cargar el mapa centrado por defecto (sin pedir ubicación automáticamente,
+  // para no disparar el bloqueo de permiso de Android al arrancar)
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const p = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-          setCentro(p);
-          setMiPos(p);
-          setCargado(true);
-        },
-        () => setCargado(true)
-      );
-    } else {
-      setCargado(true);
-    }
+    setCargado(true);
   }, []);
 
   useEffect(() => {
@@ -189,7 +179,7 @@ export default function Mapa() {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  // Un toque en el mapa coloca un pin provisional
+  // Un toque en el mapa coloca un pin provisional (solo si no está el modo pin-central)
   useEffect(() => {
     if (!mapaRef) return;
     const listener = mapaRef.addListener("click", (e: google.maps.MapMouseEvent) => {
@@ -219,16 +209,29 @@ export default function Mapa() {
     [mapaRef]
   );
 
+  function confirmarUbicacion() {
+    if (!mapaRef) return;
+    const c = mapaRef.getCenter();
+    if (!c) return;
+    setNuevoPunto({ lat: c.lat(), lng: c.lng() });
+    setModoAnadir(false);
+  }
+
   function centrarEnMi() {
     if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition((pos) => {
-      const p = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-      setMiPos(p);
-      if (mapaRef) {
-        mapaRef.panTo(p);
-        mapaRef.setZoom(16);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const p = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        setMiPos(p);
+        if (mapaRef) {
+          mapaRef.panTo(p);
+          mapaRef.setZoom(16);
+        }
+      },
+      () => {
+        // Si deniega el permiso, no hacemos nada (se queda donde está)
       }
-    });
+    );
   }
 
   if (!cargado) {
@@ -244,25 +247,86 @@ export default function Mapa() {
       <div className="relative h-screen w-full">
         <BarraNavegacion />
 
-        <PanelBuscador
-          banos={listaBanos}
-          onSeleccion={handleSeleccionDesdeBuscador}
-        />
-        <BotonEmergencia
-          banos={listaBanos}
-          onEmergencia={handleSeleccionDesdeBuscador}
-        />
-        <button
-          onClick={centrarEnMi}
-          title="Centrarme en mi ubicación"
-          className="absolute bottom-28 right-6 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-card text-xl shadow-lg ring-1 ring-black/5 transition hover:shadow-xl"
-        >
-          🎯
-        </button>
+        {!modoAnadir && (
+          <>
+            <PanelBuscador
+              banos={listaBanos}
+              onSeleccion={handleSeleccionDesdeBuscador}
+            />
+            <BotonEmergencia
+              banos={listaBanos}
+              onEmergencia={handleSeleccionDesdeBuscador}
+            />
+            <button
+              onClick={centrarEnMi}
+              title="Centrarme en mi ubicación"
+              className="absolute right-6 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-card text-xl shadow-lg ring-1 ring-black/5 transition hover:shadow-xl"
+              style={{ bottom: "calc(7rem + env(safe-area-inset-bottom))" }}
+            >
+              🎯
+            </button>
+            <Button
+              onClick={() => {
+                if (haySesion) {
+                  setModoAnadir(true);
+                  setPinProvisional(null);
+                } else {
+                  window.location.href = "/login";
+                }
+              }}
+              className="absolute left-6 z-10 rounded-full shadow-lg"
+              size="lg"
+              style={{ bottom: "calc(1.5rem + env(safe-area-inset-bottom))" }}
+            >
+              {t("anadir_bano")}
+            </Button>
+          </>
+        )}
 
-        {/* Botón para crear baño en el pin provisional */}
-        {pinProvisional && (
-          <div className="absolute inset-x-0 bottom-6 z-30 flex justify-center px-4">
+        {modoAnadir && (
+          <>
+            <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
+              <div className="flex flex-col items-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/logo.png" alt="" className="h-12 w-12 drop-shadow-lg" />
+                <div className="h-4 w-1 bg-black/40" />
+                <div className="h-2 w-2 rounded-full bg-black/40" />
+              </div>
+            </div>
+            <div className="absolute inset-x-0 top-20 z-30 flex justify-center px-4">
+              <p className="rounded-full bg-card px-4 py-2 text-sm font-semibold shadow-lg">
+                {t("mueve_mapa")}
+              </p>
+            </div>
+            <div
+              className="absolute inset-x-0 z-30 flex justify-center gap-3 px-4"
+              style={{ bottom: "calc(1.5rem + env(safe-area-inset-bottom))" }}
+            >
+              <Button
+                variant="outline"
+                onClick={() => setModoAnadir(false)}
+                className="rounded-full shadow-lg"
+                size="lg"
+              >
+                {t("cancelar")}
+              </Button>
+              <Button
+                onClick={confirmarUbicacion}
+                className="rounded-full shadow-lg"
+                size="lg"
+              >
+                {t("confirmar_aqui")}
+              </Button>
+            </div>
+          </>
+        )}
+
+        {/* Botón para crear baño en el pin provisional (toque en el mapa) */}
+        {pinProvisional && !modoAnadir && (
+          <div
+            className="absolute inset-x-0 z-30 flex justify-center px-4"
+            style={{ bottom: "calc(6rem + env(safe-area-inset-bottom))" }}
+          >
             <div className="flex items-center gap-2 rounded-full bg-card px-4 py-2 shadow-lg">
               <span className="text-sm font-semibold">¿Crear un baño aquí?</span>
               <Button
@@ -306,7 +370,7 @@ export default function Mapa() {
             miPos={miPos}
           />
 
-          {pinProvisional && (
+          {pinProvisional && !modoAnadir && (
             <AdvancedMarker position={pinProvisional}>
               <div className="h-8 w-8 animate-bounce rounded-full border-4 border-white bg-red-500 shadow-lg" />
             </AdvancedMarker>
