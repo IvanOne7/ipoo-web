@@ -28,10 +28,8 @@ type Grupo = {
 // Agrupa baños cercanos según el nivel de zoom
 function agruparBanos(banos: Bano[], map: google.maps.Map): Grupo[] {
   const zoom = map.getZoom() ?? 15;
-  // A más zoom, menos agrupamos
   const factor = 60 / Math.pow(2, zoom);
   const grupos: Grupo[] = [];
-
   for (const b of banos) {
     let asignado = false;
     for (const g of grupos) {
@@ -65,15 +63,13 @@ function CapaBanos({
   const map = useMap();
   const supabase = createClient();
   const [banos, setBanos] = useState<Bano[]>([]);
-  const [, setTick] = useState(0); // fuerza recalcular grupos al mover/zoom
+  const [, setTick] = useState(0);
 
   useEffect(() => {
     if (!map) return;
-
     function cargarBanos() {
       const centro = map!.getCenter();
       if (!centro) return;
-
       supabase
         .rpc("banos_cercanos", {
           lat: centro.lat(),
@@ -87,7 +83,6 @@ function CapaBanos({
           }
         });
     }
-
     cargarBanos();
     const idle = map.addListener("idle", () => {
       cargarBanos();
@@ -115,7 +110,6 @@ function CapaBanos({
           </div>
         </AdvancedMarker>
       )}
-
       {grupos.map((g, i) =>
         g.banos.length === 1 ? (
           <AdvancedMarker
@@ -168,6 +162,7 @@ export default function Mapa() {
   const [banoEditar, setBanoEditar] = useState<Bano | null>(null);
   const [haySesion, setHaySesion] = useState<boolean | null>(null);
   const { t } = useIdioma();
+  const [ultimoToque, setUltimoToque] = useState<number>(0);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -223,6 +218,23 @@ export default function Mapa() {
     setModoAnadir(false);
   }
 
+  function manejarClicMapa(e: { detail: { latLng: { lat: number; lng: number } | null } }) {
+    if (modoAnadir) return;
+    const coords = e.detail.latLng;
+    if (!coords) return;
+    const ahora = Date.now();
+    if (ahora - ultimoToque < 350) {
+      if (haySesion) {
+        setNuevoPunto({ lat: coords.lat, lng: coords.lng });
+      } else {
+        window.location.href = "/login";
+      }
+      setUltimoToque(0);
+    } else {
+      setUltimoToque(ahora);
+    }
+  }
+
   function centrarEnMi() {
     if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition((pos) => {
@@ -247,19 +259,16 @@ export default function Mapa() {
     <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
       <div className="relative h-screen w-full">
         <BarraNavegacion />
-
         {!modoAnadir && (
           <>
             <PanelBuscador
               banos={listaBanos}
               onSeleccion={handleSeleccionDesdeBuscador}
             />
-
             <BotonEmergencia
               banos={listaBanos}
               onEmergencia={handleSeleccionDesdeBuscador}
             />
-
             <button
               onClick={centrarEnMi}
               title="Centrarme en mi ubicación"
@@ -267,7 +276,6 @@ export default function Mapa() {
             >
               🎯
             </button>
-
             <Button
               onClick={() => {
                 if (haySesion) {
@@ -294,13 +302,11 @@ export default function Mapa() {
                 <div className="h-2 w-2 rounded-full bg-black/40" />
               </div>
             </div>
-
             <div className="absolute inset-x-0 top-20 z-30 flex justify-center px-4">
               <p className="rounded-full bg-card px-4 py-2 text-sm font-semibold shadow-lg">
                 {t("mueve_mapa")}
               </p>
             </div>
-
             <div className="absolute inset-x-0 bottom-6 z-30 flex justify-center gap-3 px-4">
               <Button
                 variant="outline"
@@ -327,6 +333,8 @@ export default function Mapa() {
           gestureHandling="greedy"
           mapId={process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID!}
           onIdle={(e) => setMapaRef(e.map)}
+          onClick={manejarClicMapa}
+          disableDoubleClickZoom={true}
           disableDefaultUI={true}
           zoomControl={true}
           clickableIcons={false}
