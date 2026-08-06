@@ -258,7 +258,7 @@ export default function Mapa() {
               onClick={centrarEnMi}
               title="Centrarme en mi ubicación"
               className="absolute right-6 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-card text-xl shadow-lg ring-1 ring-black/5 transition hover:shadow-xl"
-              style={{ bottom: "calc(9rem + env(safe-area-inset-bottom, 1.5rem))" }}
+              style={{ bottom: "calc(13rem + env(safe-area-inset-bottom, 1.5rem))" }}
             >
               🎯
             </button>
