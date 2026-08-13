@@ -49,6 +49,21 @@ export default function LoginPage() {
     }
   }
 
+  async function recuperarPassword() {
+    if (!email) {
+      setMensaje("Escribe tu email arriba primero.");
+      return;
+    }
+    setCargando(true);
+    setMensaje("");
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/restablecer`,
+    });
+    if (error) setMensaje("Error: " + error.message);
+    else setMensaje("Te hemos enviado un email para restablecer la contraseña.");
+    setCargando(false);
+  }
+
   async function entrarConGoogle() {
     setCargando(true);
     setMensaje("");
@@ -144,6 +159,14 @@ export default function LoginPage() {
           >
             {t("crear_cuenta")}
           </Button>
+
+          <button
+            type="button"
+            onClick={recuperarPassword}
+            className="w-full text-center text-sm font-medium text-primary hover:underline"
+          >
+            ¿Olvidaste tu contraseña?
+          </button>
 
           <div className="flex items-center gap-3 py-1">
             <div className="h-px flex-1 bg-border" />
