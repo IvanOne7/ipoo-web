@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "es.ipoo.twa",
+        "sha256_cert_fingerprints": ["54:26:72:B6:7E:22:83:56:A0:8C:66:80:E2:D4:4F:9D:22:80:65:24:8F:3E:1E:AC:A9:68:A7:5D:13:D6:7A:AC"]
+      }
+    }]
