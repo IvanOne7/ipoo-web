@@ -18,7 +18,7 @@ export default function LoginPage() {
   const [cargando, setCargando] = useState(false);
   const [verPassword, setVerPassword] = useState(false);
 
- async function registrarse() {
+  async function registrarse() {
     setCargando(true);
     setMensaje("");
     const { error } = await supabase.auth.signUp({
@@ -65,35 +65,49 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-b from-primary/10 via-background to-background px-4">
-      {/* Burbujas decorativas de fondo */}
-      <div className="pointer-events-none absolute -left-16 -top-16 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-20 -right-10 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-teal-400 via-primary to-emerald-500 px-4 py-8">
+      {/* Emojis de papel flotando de fondo */}
+      <span className="pointer-events-none absolute left-[8%] top-[12%] animate-bounce text-4xl opacity-30" style={{ animationDuration: "3s" }}>🧻</span>
+      <span className="pointer-events-none absolute right-[10%] top-[20%] animate-bounce text-3xl opacity-25" style={{ animationDuration: "4s", animationDelay: "0.5s" }}>🚽</span>
+      <span className="pointer-events-none absolute bottom-[15%] left-[12%] animate-bounce text-3xl opacity-25" style={{ animationDuration: "3.5s", animationDelay: "1s" }}>🧻</span>
+      <span className="pointer-events-none absolute bottom-[22%] right-[14%] animate-bounce text-4xl opacity-30" style={{ animationDuration: "4.5s", animationDelay: "0.3s" }}>💧</span>
 
-      <div className="relative w-full max-w-sm rounded-3xl border bg-card/80 p-8 shadow-xl backdrop-blur">
+      {/* Burbujas de luz */}
+      <div className="pointer-events-none absolute -left-16 -top-16 h-64 w-64 rounded-full bg-white/20 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-20 -right-10 h-72 w-72 rounded-full bg-white/20 blur-3xl" />
+
+      <div className="relative w-full max-w-sm rounded-[2rem] border-2 border-white/40 bg-white/95 p-8 shadow-2xl backdrop-blur-md">
         <div className="mb-6 flex flex-col items-center text-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="iPoo" className="h-32 w-auto" />
-          <h1 className="mt-2 text-2xl font-extrabold tracking-tight">iPoo</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <img
+            src="/logo.png"
+            alt="iPoo"
+            className="h-32 w-auto drop-shadow-lg"
+            style={{ animation: "flotar 3s ease-in-out infinite" }}
+          />
+          <h1 className="mt-2 bg-gradient-to-r from-teal-500 to-emerald-500 bg-clip-text text-4xl font-black tracking-tight text-transparent">
+            iPoo
+          </h1>
+          <p className="mt-1 text-sm font-medium text-muted-foreground">
             {t("login_subtitulo")}
           </p>
         </div>
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="font-semibold">Email</Label>
             <Input
               id="email"
               type="email"
               placeholder="tu@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="rounded-xl border-2 py-5"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">{t("password")}</Label>
+            <Label htmlFor="password" className="font-semibold">{t("password")}</Label>
             <div className="relative">
               <Input
                 id="password"
@@ -101,12 +115,12 @@ export default function LoginPage() {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pr-10"
+                className="rounded-xl border-2 py-5 pr-10"
               />
               <button
                 type="button"
                 onClick={() => setVerPassword(!verPassword)}
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground"
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-xl"
                 aria-label={verPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
               >
                 {verPassword ? "🙈" : "👁️"}
@@ -117,7 +131,7 @@ export default function LoginPage() {
           <Button
             onClick={iniciarSesion}
             disabled={cargando}
-            className="w-full"
+            className="w-full rounded-xl py-6 text-base font-bold shadow-lg shadow-primary/30 transition active:scale-95"
             size="lg"
           >
             {t("entrar")}
@@ -126,14 +140,14 @@ export default function LoginPage() {
             onClick={registrarse}
             disabled={cargando}
             variant="outline"
-            className="w-full"
+            className="w-full rounded-xl border-2 py-6 font-bold transition active:scale-95"
           >
             {t("crear_cuenta")}
           </Button>
 
           <div className="flex items-center gap-3 py-1">
             <div className="h-px flex-1 bg-border" />
-            <span className="text-xs text-muted-foreground">{t("o_separador")}</span>
+            <span className="text-xs font-semibold text-muted-foreground">{t("o_separador")}</span>
             <div className="h-px flex-1 bg-border" />
           </div>
 
@@ -141,7 +155,7 @@ export default function LoginPage() {
             onClick={entrarConGoogle}
             disabled={cargando}
             variant="outline"
-            className="w-full"
+            className="w-full rounded-xl border-2 py-6 font-semibold transition active:scale-95"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -153,7 +167,7 @@ export default function LoginPage() {
           </Button>
 
           {mensaje && (
-            <p className="rounded-lg bg-muted p-2 text-center text-sm">
+            <p className="rounded-xl bg-muted p-3 text-center text-sm font-medium">
               {mensaje}
             </p>
           )}

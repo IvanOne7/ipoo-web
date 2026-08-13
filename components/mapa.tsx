@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   APIProvider,
   Map,
@@ -148,6 +149,7 @@ function CapaBanos({
 }
 
 export default function Mapa() {
+  const router = useRouter();
   const [centro, setCentro] = useState({ lat: 38.0951, lng: -3.6366 });
   const [miPos, setMiPos] = useState<{ lat: number; lng: number } | null>(null);
   const [cargado, setCargado] = useState(false);
@@ -168,13 +170,25 @@ export default function Mapa() {
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => {
+    supabase.auth.getUser().then(async ({ data }) => {
       setHaySesion(!!data.user);
+      // Si tiene sesión pero el perfil no está completo, mandarle a completarlo
+      if (data.user) {
+        const { data: perfil } = await supabase
+          .from("profiles")
+          .select("perfil_completo")
+          .eq("id", data.user.id)
+          .single();
+        if (perfil && !perfil.perfil_completo) {
+          router.push("/completar-perfil");
+        }
+      }
     });
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
       setHaySesion(!!session?.user);
     });
     return () => sub.subscription.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

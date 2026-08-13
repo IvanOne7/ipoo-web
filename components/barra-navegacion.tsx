@@ -35,12 +35,16 @@ const { t } = useIdioma();
 
   return (
     <header className="absolute inset-x-0 top-0 z-30 flex items-center justify-between bg-white/90 px-4 py-2 shadow-sm backdrop-blur">
-      <div className="flex items-center">
+     <div className="flex shrink-0 items-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo-completo.png" alt="iPoo" className="h-12 w-auto" />
+        <img
+          src="/logo-completo.png"
+          alt="iPoo"
+          className="h-10 w-auto shrink-0 object-contain"
+        />
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex min-w-0 items-center gap-1">
         {cargando ? null : email ? (
           <>
             <span className="hidden text-sm text-gray-600 sm:inline">
