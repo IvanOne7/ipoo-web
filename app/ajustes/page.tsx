@@ -10,6 +10,7 @@ import { getRadio, setRadio } from "@/lib/preferencias";
 import { rangoDesdePuntos, progresoHaciaSiguiente } from "@/lib/rangos";
 import { useIdioma, IDIOMAS } from "@/lib/idiomas";
 import { LOGROS, contarLogros, type EstadisticasUsuario } from "@/lib/logros";
+import { sonidoActivado, setSonido } from "@/lib/sonidos";
 
 type Valoracion = {
   id: string;
@@ -39,6 +40,7 @@ export default function AjustesPage() {
     ciudadesDistintas: 0,
   });
   const [racha, setRacha] = useState(0);
+  const [sonidoOn, setSonidoOn] = useState(true);
   const [guardando, setGuardando] = useState(false);
   const [mensaje, setMensaje] = useState("");
 
@@ -135,6 +137,7 @@ export default function AjustesPage() {
       }
 
       setRadioState(getRadio());
+      setSonidoOn(sonidoActivado());
 
       // Si no tiene ciudad guardada, detectarla sola por GPS
       if (perfil && !perfil.ciudad) {
@@ -459,6 +462,32 @@ export default function AjustesPage() {
           onChange={(e) => setRadioState(Number(e.target.value))}
           className="w-full accent-primary"
         />
+      </section>
+
+      {/* Sonido */}
+      <section className="mb-8 flex items-center justify-between rounded-2xl border bg-card p-6 shadow-sm">
+        <div>
+          <h2 className="text-lg font-semibold">🔊 Efectos de sonido</h2>
+          <p className="text-xs text-muted-foreground">
+            Sonidos al ganar puntos, publicar y emergencia
+          </p>
+        </div>
+        <button
+          onClick={() => {
+            const nuevo = !sonidoOn;
+            setSonidoOn(nuevo);
+            setSonido(nuevo);
+          }}
+          className={`relative h-7 w-12 rounded-full transition ${
+            sonidoOn ? "bg-primary" : "bg-muted"
+          }`}
+        >
+          <span
+            className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition ${
+              sonidoOn ? "left-6" : "left-1"
+            }`}
+          />
+        </button>
       </section>
 
       {/* Guardar */}
