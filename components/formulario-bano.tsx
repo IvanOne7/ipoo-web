@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { sonidoPop } from "@/lib/sonidos";
 import {
   Dialog,
   DialogContent,
@@ -48,6 +49,7 @@ export default function FormularioBano({
 }: {
   punto?: { lat: number; lng: number };
   banoExistente?: Bano;
+sonidoPop();
   onCerrar: () => void;
   onGuardado: () => void;
 }) {

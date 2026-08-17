@@ -14,6 +14,7 @@ import SelectorPuntuacion from "@/components/selector-puntuacion";
 import FormularioReclamar from "@/components/formulario-reclamar";
 import { useIdioma } from "@/lib/idiomas";
 import type { Bano } from "@/components/panel-buscador";
+import { sonidoMoneda } from "@/lib/sonidos";
 
 type Valoracion = {
   id: string;
@@ -217,6 +218,7 @@ export default function FichaBano({
       }
       setGuardando(false);
     } else {
+      sonidoMoneda();
       onValorado();
     }
   }

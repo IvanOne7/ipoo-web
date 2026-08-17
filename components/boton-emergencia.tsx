@@ -1,4 +1,5 @@
 import type { Bano } from "@/components/panel-buscador";
+import { sonidoEmergencia } from "@/lib/sonidos";
 
 export default function BotonEmergencia({
   banos,
@@ -9,6 +10,7 @@ export default function BotonEmergencia({
 }) {
   function activar() {
     if (banos.length === 0) return;
+    sonidoEmergencia();
     // El más cercano: la lista ya viene ordenada por distancia desde banos_cercanos
     const masCercano = [...banos].sort(
       (a, b) => a.distancia_metros - b.distancia_metros
