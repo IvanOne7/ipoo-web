@@ -981,7 +981,7 @@ mn_titulo: {
     es: "Aún no gestionas ningún baño", en: "You don't manage any toilets yet", de: "Du verwaltest noch keine Toiletten", fr: "Vous ne gérez encore aucunes toilettes", it: "Non gestisci ancora nessun bagno",
   },
   mn_sin_banos_texto: {
-    es: "Si eres el dueño de un local, ve a su baño en el mapa y pulsa \"Soy el propietario\". Cuando verifiquemos tu solicitud, aparecerá aquí.",
+    es: "Si eres el dueño de un local, ve a tu baño en el mapa y pulsa \"Soy el propietario\". Cuando verifiquemos tu solicitud, aparecerá aquí.",
     en: "If you own a venue, go to its toilet on the map and tap \"I'm the owner\". Once we verify your request, it'll appear here.",
     de: "Wenn dir ein Lokal gehört, gehe zu seiner Toilette auf der Karte und tippe auf \"Ich bin der Inhaber\". Nach der Prüfung erscheint es hier.",
     fr: "Si vous possédez un établissement, allez à ses toilettes sur la carte et appuyez sur \"Je suis le propriétaire\". Après vérification, il apparaîtra ici.",

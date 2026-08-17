@@ -89,6 +89,12 @@ export default function BarraNavegacion() {
                   >
                     {t("ajustes")}
                   </button>
+                  <button
+                    onClick={() => ir("/juego")}
+                    className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition hover:bg-muted"
+                  >
+                    🎮 Juego
+                  </button>
                   <div className="my-1 h-px bg-border" />
                   <button
                     onClick={cerrarSesion}

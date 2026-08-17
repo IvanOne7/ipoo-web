@@ -229,7 +229,7 @@ export default function JuegoPage() {
       </div>
 
       <p className="mt-4 text-center text-sm font-medium text-white/90">
-        Desliza para mover las fichas.<br />¡Une los rollos hasta llegar a 2048!
+        Desliza para mover las fichas.<br />¡Une los números iguales hasta llegar a 2048!
       </p>
 
       <Button
