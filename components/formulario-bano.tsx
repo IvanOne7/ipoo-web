@@ -49,7 +49,6 @@ export default function FormularioBano({
 }: {
   punto?: { lat: number; lng: number };
   banoExistente?: Bano;
-sonidoPop();
   onCerrar: () => void;
   onGuardado: () => void;
 }) {
@@ -69,7 +68,6 @@ sonidoPop();
   const [direccion, setDireccion] = useState(banoExistente?.direccion ?? "");
   const [horario, setHorario] = useState(banoExistente?.horario ?? "");
   const [descripcion, setDescripcion] = useState(banoExistente?.descripcion ?? "");
-
   const [esGratis, setEsGratis] = useState(banoExistente?.es_gratis ?? true);
   const [requiereConsumir, setRequiereConsumir] = useState(
     banoExistente?.requiere_consumir ?? false
@@ -81,14 +79,12 @@ sonidoPop();
   const [tieneCambiador, setTieneCambiador] = useState(
     banoExistente?.tiene_cambiador ?? false
   );
-
   const [mensaje, setMensaje] = useState("");
   const [guardando, setGuardando] = useState(false);
 
   async function guardar() {
     setGuardando(true);
     setMensaje("");
-
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user) {
       setMensaje(t("debes_iniciar"));
@@ -112,7 +108,6 @@ sonidoPop();
     };
 
     let error;
-
     if (editando) {
       const res = await supabase
         .from("banos")
@@ -132,6 +127,7 @@ sonidoPop();
       setMensaje("Error: " + error.message);
       setGuardando(false);
     } else {
+      sonidoPop();
       onGuardado();
     }
   }
@@ -144,7 +140,6 @@ sonidoPop();
             {editando ? t("titulo_editar") : t("titulo_anadir")}
           </DialogTitle>
         </DialogHeader>
-
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="nombre">{t("nombre_sitio")}</Label>
@@ -155,7 +150,6 @@ sonidoPop();
               placeholder="Ej. El Corte Inglés - Planta 3"
             />
           </div>
-
           <div className="space-y-2">
             <Label htmlFor="tipo">{t("tipo_establecimiento")}</Label>
             <select
@@ -171,7 +165,6 @@ sonidoPop();
               ))}
             </select>
           </div>
-
           <div className="space-y-2">
             <Label htmlFor="direccion">{t("direccion_opcional")}</Label>
             <Input
@@ -181,7 +174,6 @@ sonidoPop();
               placeholder="C/ Mayor 12"
             />
           </div>
-
           <div className="space-y-2">
             <Label htmlFor="horario">{t("horario_opcional")}</Label>
             <Input
@@ -213,7 +205,6 @@ sonidoPop();
               />
             </div>
           </div>
-
           <div className="space-y-2">
             <Label htmlFor="descripcion">{t("notas_opcional")}</Label>
             <Textarea
@@ -224,13 +215,11 @@ sonidoPop();
               className="rounded-2xl"
             />
           </div>
-
           {mensaje && (
             <p className="rounded-xl bg-destructive/10 p-2 text-sm text-destructive">
               {mensaje}
             </p>
           )}
-
           <div className="flex gap-2 border-t pt-4">
             <Button variant="outline" onClick={onCerrar} className="flex-1">
               {t("cancelar")}
