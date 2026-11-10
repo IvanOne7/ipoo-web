@@ -292,7 +292,7 @@ export default function FichaBano({
                   {t("como_llegar")}
                 </Button>
 
-                {miId && bano.created_by === miId && (
+                {miId && (bano.created_by === miId || !bano.created_by) && (
                   <Button
                     variant="ghost"
                     className="w-full text-sm"
