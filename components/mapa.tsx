@@ -152,6 +152,7 @@ export default function Mapa() {
   const router = useRouter();
   const [centro, setCentro] = useState({ lat: 38.0951, lng: -3.6366 });
   const [miPos, setMiPos] = useState<{ lat: number; lng: number } | null>(null);
+  const [ubicacionDenegada, setUbicacionDenegada] = useState(false);
   const [cargado, setCargado] = useState(false);
   const [recargar, setRecargar] = useState(0);
   const [nuevoPunto, setNuevoPunto] = useState<{ lat: number; lng: number } | null>(null);
@@ -228,19 +229,35 @@ export default function Mapa() {
     setModoAnadir(false);
   }
 
+  // Al abrir el mapa: si el usuario ya dio permiso antes, centrar en su zona
+  // sin pedir nada. Si lo denegó, no insistimos con el aviso.
+  useEffect(() => {
+    if (!mapaRef || !navigator.permissions) return;
+    navigator.permissions
+      .query({ name: "geolocation" })
+      .then((estado) => {
+        if (estado.state === "granted") centrarEnMi();
+        if (estado.state === "denied") setUbicacionDenegada(true);
+      })
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapaRef]);
+
   function centrarEnMi() {
     if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const p = { lat: pos.coords.latitude, lng: pos.coords.longitude };
         setMiPos(p);
+        setUbicacionDenegada(false);
         if (mapaRef) {
           mapaRef.panTo(p);
           mapaRef.setZoom(16);
         }
       },
       () => {
-        // Si deniega el permiso, no hacemos nada
+        // Si deniega el permiso, dejamos de mostrar el aviso
+        setUbicacionDenegada(true);
       }
     );
   }
@@ -268,6 +285,15 @@ export default function Mapa() {
               banos={listaBanos}
               onEmergencia={handleSeleccionDesdeBuscador}
             />
+            {!miPos && !ubicacionDenegada && (
+              <button
+                onClick={centrarEnMi}
+                className="absolute inset-x-0 z-20 mx-auto w-fit rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white shadow-lg"
+                style={{ bottom: "calc(17rem + env(safe-area-inset-bottom, 1.5rem))" }}
+              >
+                📍 Usar mi ubicación
+              </button>
+            )}
             <button
               onClick={centrarEnMi}
               title="Centrarme en mi ubicación"
