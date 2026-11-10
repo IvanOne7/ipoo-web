@@ -275,6 +275,16 @@ export default function Mapa() {
       <div className="relative h-screen w-full">
         <BarraNavegacion />
 
+        <a
+          href="https://www.openstreetmap.org/copyright"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="absolute right-2 z-10 rounded bg-white/80 px-1.5 py-0.5 text-[10px] text-black/70 shadow-sm"
+          style={{ bottom: "calc(1.75rem + env(safe-area-inset-bottom, 0px))" }}
+        >
+          © Colaboradores de OpenStreetMap
+        </a>
+
         {!modoAnadir && (
           <>
             <PanelBuscador
